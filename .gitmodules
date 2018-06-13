@@ -1,0 +1,3 @@
+[submodule "wLib/wFsm"]
+	path = wLib/wFsm
+	url = git@github.com:cushmily/wFsm.git
