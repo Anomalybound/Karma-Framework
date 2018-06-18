@@ -1,3 +1,6 @@
-[submodule "wLib/wFsm"]
-	path = wLib/wFsm
+[submodule "wLib/Fsm"]
+	path = wLib/Fsm
 	url = git@github.com:cushmily/wFsm.git
+[submodule "wLib/Injection"]
+	path = wLib/Injection
+	url = git@github.com:cushmily/wInjection.git
