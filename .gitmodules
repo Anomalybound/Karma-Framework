@@ -7,3 +7,6 @@
 [submodule "wLib/EventBroker"]
 	path = wLib/EventBroker
 	url = git@github.com:cushmily/wEventBroker.git
+[submodule "wLib/Promise"]
+	path = wLib/Promise
+	url = git@github.com:cushmily/wPromise.git
