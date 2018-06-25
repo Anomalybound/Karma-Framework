@@ -10,3 +10,6 @@
 [submodule "wLib/Promise"]
 	path = wLib/Promise
 	url = git@github.com:cushmily/wPromise.git
+[submodule "wLib/UIStack"]
+	path = wLib/UIStack
+	url = git@github.com:cushmily/wUI.git
