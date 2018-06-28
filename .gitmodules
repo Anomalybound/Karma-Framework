@@ -4,12 +4,12 @@
 [submodule "wLib/Injection"]
 	path = wLib/Injection
 	url = git@github.com:cushmily/wInjection.git
-[submodule "wLib/EventBroker"]
-	path = wLib/EventBroker
-	url = git@github.com:cushmily/wEventBroker.git
 [submodule "wLib/Promise"]
 	path = wLib/Promise
 	url = git@github.com:cushmily/wPromise.git
 [submodule "wLib/UIStack"]
 	path = wLib/UIStack
 	url = git@github.com:cushmily/wUI.git
+[submodule "wLib/Misc"]
+	path = wLib/Misc
+	url = git@github.com:cushmily/wMisc.git
