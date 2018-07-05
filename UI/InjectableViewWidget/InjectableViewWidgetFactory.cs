@@ -15,19 +15,22 @@ namespace Karma.UI
             _context = Object.FindObjectOfType<SceneContext>();
         }
 
-        public override void CreateInstance(IUIManager manager, string widgetName, int assignedId, Action<BaseWidget> onCreated)
+        public override void CreateInstance(IUIManager manager, string widgetName, int assignedId,
+            Action<BaseWidget> onCreated)
         {
             CreateInstance(manager, widgetName, assignedId, widget => onCreated.Invoke(widget));
+        }
+
+        public override object GetInstance(Type instanceType)
+        {
+            return _context.Create(instanceType);
         }
 
         public void CreateInstance(IUIManager manager, string widgetName, int assignedId,
             Action<InjectableViewWidget> onCreated)
         {
-            CreateInstance(manager, widgetName, assignedId, (ViewWidget widget) =>
-            {
-                var controller = ControllerCaches[assignedId];
-                if (_context != null && controller != null) { _context.Inject(controller); }
-            });
+            CreateInstance(manager, widgetName, assignedId,
+                (ViewWidget widget) => { onCreated.Invoke((InjectableViewWidget) widget); });
         }
     }
 }
