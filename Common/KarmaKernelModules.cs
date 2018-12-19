@@ -11,6 +11,9 @@ namespace Karma.Common
     {
         [Header("UI")]
         [SerializeField]
+        private bool _fromInstance;
+
+        [SerializeField]
         private bool _isLandscape;
 
         [SerializeField]
@@ -22,7 +25,9 @@ namespace Karma.Common
             Container.Bind<ILog, UnityLogger>();
             Container.Bind<IEventBroker, EventBroker>();
             Container.Bind<IUIManager>().FromMethod(
-                () => UIManager.BuildHierarchy(Container, _isLandscape, _referenceResolution)
+                () => _fromInstance
+                    ? UIManager.FromInstance(Container)
+                    : UIManager.BuildHierarchy(Container, _isLandscape, _referenceResolution)
             );
         }
     }
