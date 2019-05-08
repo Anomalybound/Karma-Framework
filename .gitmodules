@@ -1,15 +1,15 @@
-[submodule "wLib/Fsm"]
-	path = wLib/Fsm
+[submodule "Vendor/Fsm"]
+	path = Vendor/Fsm
 	url = git@github.com:cushmily/wFsm.git
-[submodule "wLib/Injection"]
-	path = wLib/Injection
+[submodule "Vendor/Injection"]
+	path = Vendor/Injection
 	url = git@github.com:cushmily/wInjection.git
-[submodule "wLib/Promise"]
-	path = wLib/Promise
+[submodule "Vendor/Promise"]
+	path = Vendor/Promise
 	url = git@github.com:cushmily/wPromise.git
-[submodule "wLib/UIStack"]
-	path = wLib/UIStack
+[submodule "Vendor/UIStack"]
+	path = Vendor/UIStack
 	url = git@github.com:cushmily/wUI.git
-[submodule "wLib/Misc"]
-	path = wLib/Misc
+[submodule "Vendor/Misc"]
+	path = Vendor/Misc
 	url = git@github.com:cushmily/wMisc.git
