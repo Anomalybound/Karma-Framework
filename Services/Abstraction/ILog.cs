@@ -1,17 +1,13 @@
-using System;
+using UnityEngine;
 
-namespace Karma.Services
+namespace Karma
 {
     public interface ILog
     {
-        void Log(string log);
-        
-        void Log(object obj);
+        void Log(object obj, Object context = null);
 
-        void Warning(string warning);
+        void Warn(string warning, Object context = null);
 
-        void Error(string error);
-
-        void Exception(Exception exception);
+        void Error(string error, Object context = null);
     }
 }

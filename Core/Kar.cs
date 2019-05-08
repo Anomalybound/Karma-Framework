@@ -22,7 +22,7 @@ namespace Karma
 
         private static Kar instance;
 
-        private readonly DiContainer _container;
+        private readonly IDependencyContainer _container;
 
         private readonly IEventBroker _eventBroker;
 
@@ -30,7 +30,7 @@ namespace Karma
 
         private readonly ILog _logger;
 
-        public Kar(DiContainer container, IEventBroker eventBroker, IUIManager uiManager, ILog logger)
+        public Kar(IDependencyContainer container, IEventBroker eventBroker, IUIManager uiManager, ILog logger)
         {
             _container = container;
             _eventBroker = eventBroker;
