@@ -3,9 +3,9 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Plugins.Karma.Utils
+namespace Karma.Utils
 {
-    public struct ResourcesRequestAwaiter : INotifyCompletion
+    public struct ResourcesRequestAwaiter : ICriticalNotifyCompletion
     {
         private readonly ResourceRequest _asyncOperation;
 
@@ -18,9 +18,11 @@ namespace Plugins.Karma.Utils
 
         public bool IsCompleted => _asyncOperation.isDone;
 
-        public void OnCompleted(Action action)
+        public void OnCompleted(Action action) => UnsafeOnCompleted(action);
+
+        public void UnsafeOnCompleted(Action continuation)
         {
-            action.Invoke();
+            continuation.Invoke();
         }
 
         public void GetResult() { }

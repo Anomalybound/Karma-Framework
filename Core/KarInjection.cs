@@ -67,12 +67,11 @@ namespace Karma
             Instance._container.Inject(target);
         }
 
-        public static void InjectGameObject(GameObject target)
+        public static void Inject(GameObject target)
         {
-            var monos = target.GetComponents<MonoBehaviour>();
-            for (var i = 0; i < monos.Length; i++)
+            var components = target.GetComponents<MonoBehaviour>();
+            foreach (var mono in components)
             {
-                var mono = monos[i];
                 if (mono == null) { continue; }
 
                 Inject(mono);

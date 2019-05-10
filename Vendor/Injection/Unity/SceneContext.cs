@@ -5,20 +5,22 @@ using Debug = UnityEngine.Debug;
 
 namespace wLib.Injection
 {
+    [ScriptOrder(-10000)]
     public class SceneContext : MonoBehaviour, IContext
     {
         public IDependencyContainer Container { get; } = new DependencyContainer();
 
         [SerializeField]
-        private MonoModule[] _modules;
+        private MonoModule[] _modules = { };
 
         protected virtual void Awake()
         {
+            if (Context.GlobalContext == null) { Context.SetCurrentContext(this); }
+
             if (_modules != null)
             {
-                for (var i = 0; i < _modules.Length; i++)
+                foreach (var module in _modules)
                 {
-                    var module = _modules[i];
                     if (module == null) { continue; }
 
                     module.SetContainer(Container);
@@ -40,8 +42,6 @@ namespace wLib.Injection
             sw.Stop();
             var ms = sw.ElapsedMilliseconds;
             Debug.LogFormat("Inject scene game object finished. cost : {0} ms. ", ms);
-
-            if (Context.GlobalContext == null) { Context.SetCurrentContext(this); }
         }
 
         public void InjectGameObject(GameObject targetGo)
@@ -54,11 +54,6 @@ namespace wLib.Injection
 
                 Inject(mono);
             }
-        }
-
-        public void Inject(object obj)
-        {
-            Container.Inject(obj);
         }
 
         public object Create(Type type)
@@ -79,6 +74,11 @@ namespace wLib.Injection
         public T Resolve<T>() where T : class
         {
             return Resolve(typeof(T)) as T;
+        }
+
+        public T Inject<T>(T target)
+        {
+            return Container.Inject(target);
         }
     }
 }

@@ -1,39 +1,30 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace wLib.UIStack
 {
     public interface IUIManager
     {
-        void Push(string widgetName);
+        Task<int> Push(string widgetName);
 
-        void Push(string widgetName, Action<int> onCreated);
+        Task<int> Push(string widgetName, UIMessage message);
 
-        void Push(string widgetName, UIMessage message);
+        Task<int> Push<TWidget>(string widgetName) where TWidget : Widget;
 
-        void Push(string widgetName, UIMessage message, Action<int> onCreated);
+        Task<int> Push<TWidget>(string widgetName, UIMessage message) where TWidget : Widget;
 
-        void Push<TWidget>(string widgetName) where TWidget : Widget;
+        Task Pop(bool recycle = false);
 
-        void Push<TWidget>(string widgetName, Action<int> onCreated) where TWidget : Widget;
+        Task Pop(Action onDone, bool recycle = false);
 
-        void Push<TWidget>(string widgetName, UIMessage message) where TWidget : Widget;
+        Task ClearPopups();
 
-        void Push<TWidget>(string widgetName, UIMessage message, Action<int> onCreated) where TWidget : Widget;
+        Task ClearFixes();
 
-        void Pop(bool recycle = false);
+        Task ClearWindows();
 
-        void Pop(Action onDone, bool recycle = false);
+        Task ClearAll();
 
-        void ClearPopups();
-
-        void ClearFixes();
-
-        void ClearWindows();
-
-        void ClearAll();
-
-        void Close(int widgetId, bool recycle = false);
-
-        void Close(int widgetId, Action onClosed, bool recycle = false);
+        Task Close(int widgetId, bool recycle = false);
     }
 }

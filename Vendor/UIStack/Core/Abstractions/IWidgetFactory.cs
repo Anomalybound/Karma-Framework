@@ -1,18 +1,16 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 
 namespace wLib.UIStack
 {
     public interface IWidgetFactory
     {
-        void SetupFactory();
-
-        void CreateInstance(IUIManager manager, string widgetName, int assignedId, UIMessage message,
-            Action<Widget> onCreated);
+        Task<IWidget> CreateInstance(IUIManager manager, string name, int assignedId, UIMessage message);
     }
 
-    public interface IWidgetFactory<out TWidget> : IWidgetFactory where TWidget : Widget
+    public interface IWidgetFactory<TWidget> : IWidgetFactory where TWidget : Widget
     {
-        void CreateInstance(IUIManager manager, string widgetName, int assignedId, UIMessage message,
-            Action<TWidget> onCreated);
+        new Task<TWidget> CreateInstance(IUIManager manager, string name, int assignedId, UIMessage message);
+
+        void ReturnInstance(TWidget widget);
     }
 }

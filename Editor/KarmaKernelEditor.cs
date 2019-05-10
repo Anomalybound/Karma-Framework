@@ -1,18 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Karma.Core;
+using UnityEditor;
 using UnityEngine;
 
-public class KarmaKernelEditor : MonoBehaviour
+namespace Karma
 {
-    // Start is called before the first frame update
-    void Start()
+    public class KarmaKernelEditor
     {
-        
-    }
+        [MenuItem("Karma/Quick Scene Setup %#k")]
+        public static void Setup()
+        {
+            var kernel = Object.FindObjectOfType<KarmaKernel>();
+            if (kernel != null)
+            {
+                Debug.LogWarning("Kernel already exists.");
+                return;
+            }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            kernel = Resources.Load<KarmaKernel>("Karma Kernel");
+            if (kernel != null) { Object.Instantiate(kernel).name = "Karma Kernel"; }
+        }
     }
 }

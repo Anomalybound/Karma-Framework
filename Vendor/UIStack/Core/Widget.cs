@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
+using Karma;
 using UnityEngine;
+using Object = System.Object;
 
 namespace wLib.UIStack
 {
@@ -19,65 +22,40 @@ namespace wLib.UIStack
 
         protected IUIManager UIManager { get; private set; }
 
-        public void SetManagerInfo(int id, string path, IUIManager manager)
+        protected UIMessage Message { get; private set; } = UIMessage.Empty;
+
+        public void SetManagerInfo(int id, string path, IUIManager manager, UIMessage message)
         {
             Id = id;
             Path = path;
             UIManager = manager;
+            Message = message;
         }
 
         #region Events
-
-        public event Action<Widget> OnShowEvent;
-
-        public event Action<Widget> OnHideEvent;
-
-        public event Action<Widget> OnFreezeEvent;
-
-        public event Action<Widget> OnResumeEvent;
 
         public event Action<Widget> OnDestroyEvent;
 
         #endregion
 
-        public virtual IEnumerator OnShow()
+        public virtual async Task OnShow()
         {
-            yield break;
+            await Task.FromResult(default(object));
         }
 
-        public virtual IEnumerator OnHide()
+        public virtual async Task OnHide()
         {
-            yield break;
+            await Task.FromResult(default(object));
         }
 
-        public virtual IEnumerator OnResume()
+        public virtual async Task OnResume()
         {
-            yield break;
+            await Task.FromResult(default(object));
         }
 
-        public virtual IEnumerator OnFreeze()
+        public virtual async Task OnFreeze()
         {
-            yield break;
-        }
-
-        public void TriggerOnShowEvent()
-        {
-            OnShowEvent?.Invoke(this);
-        }
-
-        public void TriggerOnHideEvent()
-        {
-            OnHideEvent?.Invoke(this);
-        }
-
-        public void TriggerOnFreezeEvent()
-        {
-            OnFreezeEvent?.Invoke(this);
-        }
-
-        public void TriggerOnResumeEvent()
-        {
-            OnResumeEvent?.Invoke(this);
+            await Task.FromResult(default(object));
         }
 
         public void DestroyWidget()

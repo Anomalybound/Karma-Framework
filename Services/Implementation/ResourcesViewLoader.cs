@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Plugins.Karma.Utils;
 using UnityEngine;
 
 namespace Karma.Services
@@ -16,19 +15,25 @@ namespace Karma.Services
         public async Task<GameObject> LoadView(string key)
         {
             var request = Resources.LoadAsync<GameObject>(key);
+
             await request;
+
+            await Task.Delay(10);
 
             var go = request.asset as GameObject;
             if (go != null) { return go; }
 
             Logger.Warn($"Can't load view at key:{key}", go);
-            return default;
+            return null;
         }
 
         public async Task<TView> LoadView<TView>(string key) where TView : IView
         {
             var request = Resources.LoadAsync<GameObject>(key);
+            
             await request;
+
+            await Task.Delay(10);
 
             var go = request.asset as GameObject;
             if (go != null)

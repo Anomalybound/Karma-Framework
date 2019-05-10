@@ -99,12 +99,11 @@ namespace wLib.Injection
             return instance;
         }
 
-        public void Inject(object target)
+        public T Inject<T>(T target)
         {
             var objType = target.GetType();
-            List<MemberInfo> injectedMembers;
 
-            if (!_memberCaches.TryGetValue(objType, out injectedMembers))
+            if (!_memberCaches.TryGetValue(objType, out var injectedMembers))
             {
                 injectedMembers = new List<MemberInfo>();
                 var members = objType.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
@@ -151,12 +150,14 @@ namespace wLib.Injection
                         break;
                 }
             }
+
+            return target;
         }
 
         public IDependencyContainer MountModule(params IModule[] modules)
         {
             _modules.AddRange(modules);
-            
+
             foreach (var module in modules) { module.RegisterBindings(); }
 
             return this;

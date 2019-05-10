@@ -10,18 +10,18 @@ namespace Karma.Common
     {
         [Header("General")]
         [SerializeField]
-        private bool _enableLog = true;
+        protected bool _enableLog = true;
 
         [Header("UI")]
         [SerializeField]
-        private bool _isLandscape;
+        protected bool _isLandscape = true;
 
         [SerializeField]
-        private Vector2 _referenceResolution = new Vector2(1920, 1080);
+        protected Vector2 _referenceResolution = new Vector2(1920, 1080);
 
         [SerializeField]
         [Tooltip("Can left empty.")]
-        private UIManager _uiMgrInstance;
+        protected UIManager _uiMgrInstance;
 
         public override void RegisterBindings()
         {

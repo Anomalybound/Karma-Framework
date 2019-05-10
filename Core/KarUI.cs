@@ -1,5 +1,5 @@
-using System;
 using wLib.UIStack;
+using System.Threading.Tasks;
 
 namespace Karma
 {
@@ -7,105 +7,55 @@ namespace Karma
     {
         #region UI Manager
 
-        public static void Push(string widgetName)
+        public static async Task<int> Push(string widgetName)
         {
-            Push<Widget>(widgetName, UIMessage.Empty, null);
+            return await Push<Widget>(widgetName);
         }
 
-        public static void Push(string widgetName, Action<int> onCreated)
+        public static async Task<int> Push(string widgetName, UIMessage message)
         {
-            Push<Widget>(widgetName, UIMessage.Empty, onCreated);
+            return await Push<Widget>(widgetName, message);
         }
 
-        public static void Push(string widgetName, UIMessage message)
+        public static async Task<int> Push<TWidget>(string widgetName) where TWidget : Widget
         {
-            Push<Widget>(widgetName, message, null);
+            return await Push<TWidget>(widgetName, UIMessage.Empty);
         }
 
-        public static void Push(string widgetName, UIMessage message, Action<int> onCreated)
-        {
-            Push<Widget>(widgetName, message, onCreated);
-        }
-
-        public static void Push<TWidget>() where TWidget : Widget
-        {
-            Push<TWidget>(null, UIMessage.Empty, null);
-        }
-
-        public static void Push<TWidget>(Action<int> onCreated) where TWidget : Widget
-        {
-            Push<TWidget>(null, UIMessage.Empty, onCreated);
-        }
-
-        public static void Push<TWidget>(UIMessage message) where TWidget : Widget
-        {
-            Push<TWidget>(null, message, null);
-        }
-
-        public static void Push<TWidget>(UIMessage message, Action<int> onCreated) where TWidget : Widget
-        {
-            Push<TWidget>(null, UIMessage.Empty, null);
-        }
-
-        public static void Push<TWidget>(string widgetName) where TWidget : Widget
-        {
-            Push<TWidget>(widgetName, UIMessage.Empty, null);
-        }
-
-        public static void Push<TWidget>(string widgetName, Action<int> onCreated) where TWidget : Widget
-        {
-            Push<TWidget>(widgetName, UIMessage.Empty, onCreated);
-        }
-
-        public static void Push<TWidget>(string widgetName, UIMessage message) where TWidget : Widget
-        {
-            Push<TWidget>(widgetName, message, null);
-        }
-
-        public static void Push<TWidget>(string widgetName, UIMessage message, Action<int> onCreated)
+        public static async Task<int> Push<TWidget>(string widgetName, UIMessage message)
             where TWidget : Widget
         {
-            Instance._uiManager.Push<TWidget>(widgetName, message, onCreated);
+            return await Instance._uiManager.Push<TWidget>(widgetName, message);
         }
 
-        public static void Pop(bool recycle = false)
+        public static async void Pop(bool recycle = false)
         {
-            Instance._uiManager.Pop(recycle);
+            await Instance._uiManager.Pop(recycle);
         }
 
-        public static void Pop(Action onDone, bool recycle = false)
+        public static async void ClearPopups()
         {
-            Instance._uiManager.Pop(onDone, recycle);
+            await Instance._uiManager.ClearPopups();
         }
 
-        public static void ClearPopups()
+        public static async void ClearFixes()
         {
-            Instance._uiManager.ClearPopups();
+            await Instance._uiManager.ClearFixes();
         }
 
-        public static void ClearFixes()
+        public static async void ClearWindows()
         {
-            Instance._uiManager.ClearFixes();
+            await Instance._uiManager.ClearWindows();
         }
 
-        public static void ClearWindows()
+        public static async void ClearAll()
         {
-            Instance._uiManager.ClearWindows();
+            await Instance._uiManager.ClearAll();
         }
 
-        public static void ClearAll()
+        public static async void Close(int widgetId, bool recycle = false)
         {
-            Instance._uiManager.ClearAll();
-        }
-
-        public static void Close(int widgetId, bool recycle = false)
-        {
-            Instance._uiManager.Close(widgetId, recycle);
-        }
-
-        public static void Close(int widgetId, Action onClosed, bool recycle = false)
-        {
-            Instance._uiManager.Close(widgetId, onClosed, recycle);
+            await Instance._uiManager.Close(widgetId, recycle);
         }
 
         #endregion

@@ -41,7 +41,7 @@ namespace wLib.Injection
 
         object Resolve(Type contract, bool createMode = false);
 
-        void Inject(object target);
+        T Inject<T>(T target);
 
         IDependencyContainer MountModule(params IModule[] modules);
     }

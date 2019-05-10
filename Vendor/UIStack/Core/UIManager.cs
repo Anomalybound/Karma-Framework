@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using wLib.Injection;
@@ -125,123 +126,71 @@ namespace wLib.UIStack
 
         #region Push
 
-        public void Push(string widgetName)
+        public async Task<int> Push(string widgetName)
         {
-            Push<Widget>(widgetName, UIMessage.Empty, null);
+            return await Push<Widget>(widgetName);
         }
 
-        public void Push(string widgetName, Action<int> onCreated)
+        public async Task<int> Push(string widgetName, UIMessage message)
         {
-            Push<Widget>(widgetName, UIMessage.Empty, onCreated);
+            return await Push<Widget>(widgetName, message);
         }
 
-        public void Push(string widgetName, UIMessage message)
+        public async Task<int> Push<TWidget>(string widgetName) where TWidget : Widget
         {
-            Push<Widget>(widgetName, message, null);
+            return await Push<TWidget>(widgetName, UIMessage.Empty);
         }
 
-        public void Push(string widgetName, UIMessage message, Action<int> onCreated)
-        {
-            Push<Widget>(widgetName, message, onCreated);
-        }
-
-        public void Push<TWidget>() where TWidget : Widget
-        {
-            Push<TWidget>(null, UIMessage.Empty, null);
-        }
-
-        public void Push<TWidget>(Action<int> onCreated) where TWidget : Widget
-        {
-            Push<TWidget>(null, UIMessage.Empty, onCreated);
-        }
-
-        public void Push<TWidget>(UIMessage message) where TWidget : Widget
-        {
-            Push<TWidget>(null, message, null);
-        }
-
-        public void Push<TWidget>(UIMessage message, Action<int> onCreated) where TWidget : Widget
-        {
-            Push<TWidget>(null, UIMessage.Empty, null);
-        }
-
-        public void Push<TWidget>(string widgetName) where TWidget : Widget
-        {
-            Push<TWidget>(widgetName, UIMessage.Empty, null);
-        }
-
-        public void Push<TWidget>(string widgetName, Action<int> onCreated) where TWidget : Widget
-        {
-            Push<TWidget>(widgetName, UIMessage.Empty, onCreated);
-        }
-
-        public void Push<TWidget>(string widgetName, UIMessage message) where TWidget : Widget
-        {
-            Push<TWidget>(widgetName, message, null);
-        }
-
-        public void Push<TWidget>(string widgetName, UIMessage message, Action<int> onCreated)
-            where TWidget : Widget
+        public async Task<int> Push<TWidget>(string widgetName, UIMessage message) where TWidget : Widget
         {
             var id = GetId();
-            GetInstance<TWidget>(widgetName, id, message, instance =>
-            {
-                var parent = LayerLookup[instance.Layer];
-                instance.transform.SetParent(parent.transform, false);
+            var instance = await GetInstance<TWidget>(widgetName, id, message);
+            var parent = LayerLookup[instance.Layer];
+            instance.transform.SetParent(parent.transform, false);
 //                instance.transform.SetAsFirstSibling();
 
-                if (instance.Layer == UILayer.Popup) { Popups.Add(instance.Id); }
+            switch (instance.Layer)
+            {
+                case UILayer.Popup:
+                    Popups.Add(instance.Id);
+                    break;
+                case UILayer.Fixed:
+                    Fixes.Add(instance.Id);
+                    break;
+            }
 
-                if (instance.Layer == UILayer.Fixed) { Fixes.Add(instance.Id); }
+            if (StackedWindows.Count > 0)
+            {
+                var prevWidget = StackedWindows.Peek();
 
-                if (StackedWindows.Count > 0)
+                await prevWidget.OnFreeze();
+
+                // Window will overlay previous windows.
+                if (instance.Layer == UILayer.Window && WindowsInDisplay.Contains(prevWidget.Id))
                 {
-                    var prevWidget = StackedWindows.Peek();
-                    RunCoroutine(prevWidget.OnFreeze(), () =>
-                    {
-                        prevWidget.TriggerOnFreezeEvent();
-
-                        // Window will overlay previous windows.
-                        if (instance.Layer == UILayer.Window && WindowsInDisplay.Contains(prevWidget.Id))
-                        {
-                            WindowsInDisplay.Remove(prevWidget.Id);
-                        }
-                    });
-                    RunCoroutine(instance.OnShow(), () =>
-                    {
-                        instance.TriggerOnShowEvent();
-                        onCreated?.Invoke(id);
-
-                        StackedWindows.Push(instance);
-                        WidgetLookup.Add(id, instance);
-                        WindowsInDisplay.Add(id);
-                    });
+                    WindowsInDisplay.Remove(prevWidget.Id);
                 }
-                else
-                {
-                    RunCoroutine(instance.OnShow(), () =>
-                    {
-                        instance.TriggerOnShowEvent();
-                        onCreated?.Invoke(id);
+            }
 
-                        StackedWindows.Push(instance);
-                        WidgetLookup.Add(id, instance);
-                        WindowsInDisplay.Add(id);
-                    });
-                }
-            });
+            await instance.OnShow();
+
+            StackedWindows.Push(instance);
+            WidgetLookup.Add(id, instance);
+            WindowsInDisplay.Add(id);
+
+            return id;
         }
 
         #endregion
 
         #region Pop
 
-        public void Pop(bool recycle = false)
+        public async Task Pop(bool recycle = false)
         {
-            Pop(null, recycle);
+            await Pop(null, recycle);
         }
 
-        public void Pop(Action onDone, bool recycle = false)
+        public async Task Pop(Action onDone, bool recycle = false)
         {
             if (StackedWindows.Count < 0)
             {
@@ -253,41 +202,36 @@ namespace wLib.UIStack
 
             if (StackedWindows.Count > 0)
             {
-                RunCoroutine(current.OnHide(), () =>
+                await current.OnHide();
+
+                if (recycle) { MoveToHidden(current); }
+                else
                 {
-                    current.TriggerOnHideEvent();
+                    WidgetLookup.Remove(current.Id);
+                    Destroy(current.gameObject);
+                }
 
-                    if (recycle) { MoveToHidden(current); }
-                    else
-                    {
-                        WidgetLookup.Remove(current.Id);
-                        Destroy(current.gameObject);
-                    }
+                current.Controller?.OnDestroy();
+                onDone?.Invoke();
 
-                    current.Controller?.OnDestroy();
-                    onDone?.Invoke();
+                // resume previous window
+                var resumeWindow = StackedWindows.Peek();
 
-                    // resume previous window
-                    var resumeWindow = StackedWindows.Peek();
-                    RunCoroutine(resumeWindow.OnResume(), () => { resumeWindow.TriggerOnResumeEvent(); });
-                });
+                await resumeWindow.OnResume();
             }
             else
             {
-                RunCoroutine(current.OnHide(), () =>
+                await current.OnHide();
+
+                if (recycle) { MoveToHidden(current); }
+                else
                 {
-                    current.TriggerOnHideEvent();
+                    WidgetLookup.Remove(current.Id);
+                    Destroy(current.gameObject);
+                }
 
-                    if (recycle) { MoveToHidden(current); }
-                    else
-                    {
-                        WidgetLookup.Remove(current.Id);
-                        Destroy(current.gameObject);
-                    }
-
-                    current.Controller?.OnDestroy();
-                    onDone?.Invoke();
-                });
+                current.Controller?.OnDestroy();
+                onDone?.Invoke();
             }
         }
 
@@ -295,60 +239,59 @@ namespace wLib.UIStack
 
         #region Clear
 
-        public void ClearPopups()
+        public async Task ClearPopups()
         {
-            foreach (var popup in Popups) { Close(popup); }
+            foreach (var popup in Popups) { await Close(popup); }
 
             Popups.Clear();
         }
 
-        public void ClearFixes()
+        public async Task ClearFixes()
         {
-            foreach (var fix in Fixes) { Close(fix); }
+            foreach (var fix in Fixes) { await Close(fix); }
 
             Fixes.Clear();
         }
 
-        public void ClearWindows()
+        public async Task ClearWindows()
         {
             while (StackedWindows.Count > 0)
             {
                 var window = StackedWindows.Pop();
-                Close(window.Id);
+                await Close(window.Id);
             }
         }
 
-        public void ClearAll()
+        public async Task ClearAll()
         {
-            ClearPopups();
-            ClearFixes();
-            ClearWindows();
+            await ClearPopups();
+            await ClearFixes();
+            await ClearWindows();
         }
 
-        public void Close(int widgetId, bool recycle = false)
+        public async Task Close(int widgetId, bool recycle = false)
         {
-            Close(widgetId, null, recycle);
+            await Close(widgetId, null, recycle);
         }
 
-        public void Close(int widgetId, Action onClosed, bool recycle = false)
+        public async Task Close(int widgetId, Action onClosed, bool recycle = false)
         {
             var targetWidget = Get(widgetId);
             if (targetWidget.Layer != UILayer.Window || !WindowsInDisplay.Contains(widgetId))
             {
-                RunCoroutine(targetWidget.OnHide(), () =>
+                await targetWidget.OnHide();
+
+                if (recycle) { MoveToHidden(targetWidget); }
+                else
                 {
-                    if (recycle) { MoveToHidden(targetWidget); }
-                    else
-                    {
-                        WidgetLookup.Remove(targetWidget.Id);
-                        Destroy(targetWidget.gameObject);
-                    }
+                    WidgetLookup.Remove(targetWidget.Id);
+                    Destroy(targetWidget.gameObject);
+                }
 
-                    targetWidget.Controller?.OnDestroy();
-                    onClosed?.Invoke();
+                targetWidget.Controller?.OnDestroy();
+                onClosed?.Invoke();
 
-                    if (WindowsInDisplay.Contains(widgetId)) { WindowsInDisplay.Remove(widgetId); }
-                });
+                if (WindowsInDisplay.Contains(widgetId)) { WindowsInDisplay.Remove(widgetId); }
             }
         }
 
@@ -392,16 +335,15 @@ namespace wLib.UIStack
                     if (!(Activator.CreateInstance(factoryType) is IWidgetFactory factoryInstance)) { continue; }
 
                     _container.Inject(factoryInstance);
-                    factoryInstance.SetupFactory();
                     RegisterFactory(att.WidgetType, factoryInstance);
                 }
             }
         }
 
-        private void GetInstance<T>(string widgetPath, int assignedId, UIMessage message, Action<T> onCreated)
-            where T : Widget
+        private async Task<TWidget> GetInstance<TWidget>(string widgetPath, int assignedId, UIMessage message)
+            where TWidget : Widget
         {
-            var resolveType = typeof(T);
+            var resolveType = typeof(TWidget);
             if (PoolingWidgets.ContainsKey(widgetPath))
             {
                 var pool = PoolingWidgets[widgetPath];
@@ -409,18 +351,16 @@ namespace wLib.UIStack
                 {
                     var instance = pool.Pop();
 
-                    if (instance.Controller != null)
-                    {
-                        try
-                        {
-                            instance.Controller?.SetControllerInfo(instance, this, message);
-                            instance.Controller?.Initialize();
-                        }
-                        catch (Exception ex) { Debug.LogException(ex); }
-                    }
+                    if (instance.Controller == null) { return instance as TWidget; }
 
-                    onCreated.Invoke(instance as T);
-                    return;
+                    try
+                    {
+                        instance.Controller?.SetControllerInfo(instance, this, message);
+                        instance.Controller?.Initialize();
+                    }
+                    catch (Exception ex) { Debug.LogException(ex); }
+
+                    return instance as TWidget;
                 }
             }
 
@@ -435,32 +375,33 @@ namespace wLib.UIStack
 
                 if (factory == null)
                 {
-                    Debug.LogError($"Widget factory not found for type: {typeof(T)}, no fallback.");
-                    return;
+                    Debug.LogError($"Widget factory not found for type: {typeof(TWidget)}, no fallback.");
+                    return null;
                 }
             }
             else { useSpecifiedFactory = true; }
 
+            TWidget ret = null;
+
             // fallback
             if (useSpecifiedFactory)
             {
-                var specifiedFactory = factory as IWidgetFactory<T>;
-                specifiedFactory?.CreateInstance(this, widgetPath, assignedId, message, onCreated);
+                if (factory is IWidgetFactory<TWidget> specifiedFactory)
+                {
+                    ret = await specifiedFactory.CreateInstance(this, widgetPath, assignedId, message);
+                }
             }
             else
             {
-                factory.CreateInstance(this, widgetPath, assignedId, message,
-                    widgetCreated =>
-                    {
-                        var genericWidget = widgetCreated as T;
-                        if (genericWidget == null)
-                        {
-                            Debug.LogWarningFormat("Can not convert [{0}] to type: {1}", widgetCreated, typeof(T));
-                        }
-
-                        onCreated.Invoke(genericWidget);
-                    });
+                var widgetCreated = await factory.CreateInstance(this, widgetPath, assignedId, message);
+                ret = widgetCreated as TWidget;
+                if (ret == null)
+                {
+                    Debug.LogWarningFormat("Can not convert [{0}] to type: {1}", widgetCreated, typeof(TWidget));
+                }
             }
+
+            return ret;
         }
 
         private void RunCoroutine(IEnumerator target, Action onDone)

@@ -1,17 +1,20 @@
-﻿using System.Collections;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 namespace wLib.UIStack
 {
     public interface IWidget
     {
-        IEnumerator OnShow();
+        Task OnShow();
 
-        IEnumerator OnHide();
+        Task OnHide();
 
-        IEnumerator OnResume();
+        Task OnResume();
 
-        IEnumerator OnFreeze();
+        Task OnFreeze();
 
         void DestroyWidget();
+
+        void SetManagerInfo(int id, string path, IUIManager manager, UIMessage message);
     }
 }

@@ -5,7 +5,7 @@ namespace wLib.Injection
     public interface IContext
     {
         IDependencyContainer Container { get; }
-        
+
         object Create(Type type);
 
         T Create<T>() where T : class;
@@ -13,5 +13,7 @@ namespace wLib.Injection
         object Resolve(Type type);
 
         T Resolve<T>() where T : class;
+
+        T Inject<T>(T target);
     }
 }

@@ -32,5 +32,10 @@ namespace wLib.Injection
         {
             return Resolve(typeof(T)) as T;
         }
+
+        public T Inject<T>(T target)
+        {
+            return Container.Inject(target);
+        }
     }
 }

@@ -3,7 +3,7 @@
 namespace wLib.UIStack
 {
     [Serializable]
-    public class UIMessage
+    public struct UIMessage
     {
         public static readonly UIMessage Empty = new UIMessage();
     }

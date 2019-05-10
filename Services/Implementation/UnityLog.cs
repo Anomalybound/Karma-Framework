@@ -18,14 +18,14 @@ namespace Karma.Services
             Debug.Log(obj, context);
         }
 
-        public void Warn(string warning, Object context = null)
+        public void Warn(object warning, Object context = null)
         {
             if (!_enable) { return; }
 
             Debug.LogWarning(warning, context);
         }
 
-        public void Error(string error, Object context = null)
+        public void Error(object error, Object context = null)
         {
             if (!_enable) { return; }
 

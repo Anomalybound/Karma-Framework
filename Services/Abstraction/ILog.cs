@@ -6,8 +6,8 @@ namespace Karma
     {
         void Log(object obj, Object context = null);
 
-        void Warn(string warning, Object context = null);
+        void Warn(object warning, Object context = null);
 
-        void Error(string error, Object context = null);
+        void Error(object error, Object context = null);
     }
 }
