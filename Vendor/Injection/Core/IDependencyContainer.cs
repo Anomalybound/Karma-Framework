@@ -5,6 +5,10 @@ namespace Karma.Injection
     public interface IDependencyContainer : IDisposable
     {
         #region Generic Binding
+        
+        IBinderInfo<TImplementation> BindAll<TImplementation>();
+        
+        IBinderInfo<TImplementation> BindAll<TImplementation>(TImplementation instance);
 
         IBinderInfo<TImplementation> Bind<TImplementation>();
 
@@ -19,7 +23,15 @@ namespace Karma.Injection
 
         #region Non Generic
 
-        IBinderInfo Bind(Type contract);
+        IBinderInfo BindAll(Type implementation);
+        
+
+        IBinderInfo BindAll(Type implementation, object instance);
+
+        IBinderInfo Bind(Type implementation);
+        
+
+        IBinderInfo Bind(Type implementation, object instance);
 
         IBinderInfo Bind(Type contract, Type implementation);
 

@@ -32,6 +32,32 @@ namespace Karma.Injection
 
         #region Generic Binding
 
+        public IBinderInfo<TImplementation> BindAll<TImplementation>()
+        {
+            var implementation = typeof(TImplementation);
+            var interfaces = implementation.GetInterfaces();
+            var binder = new BinderInfo<TImplementation>(this, implementation);
+            CheckBindingCache(implementation);
+            Types[implementation] = implementation;
+            foreach (var interfaceType in interfaces) { Types[interfaceType] = implementation; }
+
+            return binder;
+        }
+
+        public IBinderInfo<TImplementation> BindAll<TImplementation>(TImplementation instance)
+        {
+            var implementation = typeof(TImplementation);
+            var interfaces = implementation.GetInterfaces();
+            var binder = new BinderInfo<TImplementation>(this, implementation);
+            CheckBindingCache(implementation);
+            Types[implementation] = implementation;
+            foreach (var interfaceType in interfaces) { Types[interfaceType] = implementation; }
+
+            if (instance != null) { AddSingleton(implementation, instance); }
+
+            return binder;
+        }
+
         public IBinderInfo<TImplementation> Bind<TImplementation>()
         {
             return Bind<TImplementation, TImplementation>();
@@ -47,8 +73,6 @@ namespace Karma.Injection
             var binder = new BinderInfo<TImplementation>(this, typeof(TContract));
             CheckBindingCache(typeof(TContract));
             Types[typeof(TContract)] = typeof(TImplementation);
-//            Types.Add(typeof(TContract), typeof(TImplementation));
-
             return binder;
         }
 
@@ -57,8 +81,8 @@ namespace Karma.Injection
         {
             var binder = new BinderInfo<TImplementation>(this, typeof(TContract));
             CheckBindingCache(typeof(TContract));
-            Types.Add(typeof(TContract), typeof(TImplementation));
-            AddSingleton(typeof(TContract), instance);
+            Types[typeof(TContract)] = typeof(TImplementation);
+            if (instance != null) { AddSingleton(typeof(TContract), instance); }
 
             return binder;
         }
@@ -67,28 +91,46 @@ namespace Karma.Injection
 
         #region Non Generic
 
-        public IBinderInfo Bind(Type contract)
+        public IBinderInfo BindAll(Type implementation)
         {
-            var binder = new BinderInfo(this, contract);
-            CheckBindingCache(contract);
-            Types.Add(contract, contract);
+            return BindAll(implementation, null);
+        }
+
+        public IBinderInfo BindAll(Type implementation, object instance)
+        {
+            var interfaces = implementation.GetInterfaces();
+            var binder = new BinderInfo(this, implementation);
+            CheckBindingCache(implementation);
+            Types[implementation] = implementation;
+            if (instance != null) { AddSingleton(implementation, instance); }
+
+            foreach (var interfaceType in interfaces) { Types[interfaceType] = implementation; }
+
             return binder;
+        }
+
+        public IBinderInfo Bind(Type implementation)
+        {
+            return Bind(implementation, implementation);
+        }
+
+        public IBinderInfo Bind(Type implementation, object instance)
+        {
+            return Bind(implementation, implementation, instance);
         }
 
         public IBinderInfo Bind(Type contract, Type implementation)
         {
-            var binder = new BinderInfo(this, contract);
-            CheckBindingCache(contract);
-            Types.Add(contract, implementation);
-            return binder;
+            return Bind(contract, implementation, null);
         }
 
         public IBinderInfo Bind(Type contract, Type implementation, object instance)
         {
             var binder = new BinderInfo(this, contract);
             CheckBindingCache(contract);
-            Types.Add(contract, implementation);
-            AddSingleton(contract, instance);
+            Types[contract] = implementation;
+            if (instance != null) { AddSingleton(contract, instance); }
+
             return binder;
         }
 

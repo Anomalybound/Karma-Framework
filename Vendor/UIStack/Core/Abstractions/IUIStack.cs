@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Karma.UIStack
 {
-    public interface IUIStack
+    public interface IUIStack : IUIController
     {
         Task<int> Push(string widgetName);
 
@@ -16,15 +16,5 @@ namespace Karma.UIStack
         Task Pop(bool recycle = false);
 
         Task Pop(Action onDone, bool recycle = false);
-
-        Task ClearPopups();
-
-        Task ClearFixes();
-
-        Task ClearWindows();
-
-        Task ClearAll();
-
-        Task Close(int widgetId, bool recycle = false);
     }
 }
