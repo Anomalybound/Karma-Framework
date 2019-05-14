@@ -35,15 +35,11 @@ namespace Karma.Utils
         public void UnsafeOnCompleted(Action continuation)
         {
             var tween = _tween;
-            var cancellable = _cancellationToken.IsCancellationRequested;
-
-            CancellationTokenRegistration registration;
-            if (cancellable) { registration = _cancellationToken.Register(() => { tween.Kill(true); }); }
+            var registration = _cancellationToken.Register(() => { tween.Kill(true); });
 
             tween.OnKill(() =>
             {
-                if (cancellable) { registration.Dispose(); }
-
+                registration.Dispose();
                 continuation.Invoke();
             });
         }
