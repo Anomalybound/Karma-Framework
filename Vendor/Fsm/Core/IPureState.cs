@@ -1,14 +1,16 @@
-﻿namespace Karma.Fsm
+﻿using System.Threading.Tasks;
+
+namespace Karma.Fsm
 {
     public interface IPureState
     {
         #region Lifetime
 
-        void Enter();
+        Task Enter();
 
         void Update(float deltaTime);
 
-        void Exit();
+        Task Exit();
 
         float ElapsedTime { get; }
 

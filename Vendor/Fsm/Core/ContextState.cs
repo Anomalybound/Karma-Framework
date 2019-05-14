@@ -1,9 +1,11 @@
-﻿namespace Karma.Fsm
+﻿using System.Threading.Tasks;
+
+namespace Karma.Fsm
 {
     public abstract class ContextState<TContext> : State
     {
         public abstract TContext Context { get; protected set; }
         
-        public abstract void SetContext(TContext context);
+        public abstract Task SetContext(TContext context);
     }
 }

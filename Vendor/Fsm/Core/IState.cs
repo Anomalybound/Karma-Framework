@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Karma.Fsm
 {
@@ -17,13 +18,13 @@ namespace Karma.Fsm
 
         #region Operations
 
-        void ChangeState(string stateName);
+        Task ChangeState(string stateName);
 
-        void PushState(string stateName);
+        Task PushState(string stateName);
 
-        void PopState();
+        Task PopState();
 
-        void TriggerEvent(string id, EventArgs eventArgs);
+        Task TriggerEvent(string id, EventArgs eventArgs);
 
         #endregion
     }

@@ -321,7 +321,7 @@ namespace Karma.UIStack
                     if (!(atts[0] is CustomWidgetFactoryAttribute att)) { continue; }
 
 //                        Debug.Log("Collect " + att.WidgetType);
-                    if (!(Kar.Create(factoryType) is IWidgetFactory factoryInstance)) { continue; }
+                    if (!(Context.GlobalContext.Create(factoryType) is IWidgetFactory factoryInstance)) { continue; }
 
                     RegisterFactory(att.WidgetType, factoryInstance);
                 }

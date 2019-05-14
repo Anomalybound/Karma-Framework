@@ -1,4 +1,5 @@
-﻿using Karma.Fsm;
+﻿using System.Threading.Tasks;
+using Karma.Fsm;
 
 namespace Karma.Procedure
 {
@@ -6,9 +7,9 @@ namespace Karma.Procedure
     {
         public override TProcedureManager Context { get; protected set; }
 
-        public override void SetContext(TProcedureManager context)
+        public override async Task SetContext(TProcedureManager context)
         {
-            Context = context;
+            await Task.Run(() => Context = context);
         }
     }
 }

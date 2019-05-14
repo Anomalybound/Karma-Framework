@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Karma.Fsm;
 using UnityEngine;
 using Karma.Injection;
 
 namespace Karma.Procedure
 {
-    public abstract class GameProcedureController<TProcedureController, TProcedureIndex> : 
+    public abstract class GameProcedureController<TProcedureController, TProcedureIndex> :
         FsmContainer, IProcedureController
         where TProcedureController : GameProcedureController<TProcedureController, TProcedureIndex>
         where TProcedureIndex : struct, IConvertible
@@ -25,7 +26,7 @@ namespace Karma.Procedure
 
         public TProcedureIndex Current => IndexLookup[Root.ActiveStates.Peek()];
 
-        public override IState BuildState()
+        public override async Task<IState> BuildState()
         {
             var root = new State();
 
@@ -40,7 +41,7 @@ namespace Karma.Procedure
             {
                 if (context.Create(type) is GameProcedure<TProcedureController, TProcedureIndex> instance)
                 {
-                    instance.SetContext((TProcedureController) this);
+                    await instance.SetContext((TProcedureController) this);
                     procedures.Add(instance);
                 }
             }
@@ -65,12 +66,12 @@ namespace Karma.Procedure
             Root = root;
             if (procedures.Count <= 0) { return Root; }
 
-            if (procedures.Any(p => p.Index.Equals(InitState))) { ChangeState(InitState); }
+            if (procedures.Any(p => p.Index.Equals(InitState))) { await ChangeState(InitState); }
             else
             {
                 var first = procedures[0].Index;
                 Kar.Warn($"Procedure of [{InitState}] is no available, change to {first} instead.");
-                ChangeState(first);
+                await ChangeState(first);
             }
 
             return Root;
@@ -78,34 +79,34 @@ namespace Karma.Procedure
 
         #region Facade
 
-        public void ChangeState(TProcedureIndex index)
+        public async Task ChangeState(TProcedureIndex index)
         {
-            Root.ChangeState(index.ToString(CultureInfo.InvariantCulture));
+            await Root.ChangeState(index.ToString(CultureInfo.InvariantCulture));
         }
 
-        public void PushState(TProcedureIndex index)
+        public async Task PushState(TProcedureIndex index)
         {
-            Root.PushState(index.ToString(CultureInfo.InvariantCulture));
+            await Root.PushState(index.ToString(CultureInfo.InvariantCulture));
         }
 
-        public void ChangeState(string stateName)
+        public async Task ChangeState(string stateName)
         {
-            Root.ChangeState(stateName);
+            await Root.ChangeState(stateName);
         }
 
-        public void PushState(string stateName)
+        public async Task PushState(string stateName)
         {
-            Root.PushState(stateName);
+            await Root.PushState(stateName);
         }
 
-        public void PopState()
+        public async Task PopState()
         {
-            Root.PopState();
+            await Root.PopState();
         }
 
-        public void TriggerEvent(string eventId, EventArgs args)
+        public async Task TriggerEvent(string eventId, EventArgs args)
         {
-            Root.TriggerEvent(eventId, args);
+            await Root.TriggerEvent(eventId, args);
         }
 
         #endregion

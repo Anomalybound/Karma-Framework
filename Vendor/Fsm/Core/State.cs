@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Karma.Fsm
 {
@@ -15,11 +16,14 @@ namespace Karma.Fsm
 
         public Stack<IState> ActiveStates { get; } = new Stack<IState>();
 
-        public virtual void Enter()
+        public virtual async Task Enter()
         {
-            OnEnter?.Invoke();
-
-            ElapsedTime = 0f;
+            await Task.Run(() =>
+            {
+                OnEnter?.Invoke();
+                
+                ElapsedTime = 0f;
+            });
         }
 
         public virtual void Update(float deltaTime)
@@ -42,48 +46,48 @@ namespace Karma.Fsm
             }
         }
 
-        public virtual void Exit()
+        public virtual async Task Exit()
         {
-            OnExit?.Invoke();
+            await Task.Run(() => OnExit?.Invoke());
         }
 
-        public virtual void ChangeState(string name)
-        {
-            if (!Children.TryGetValue(name, out var result))
-            {
-                throw new ApplicationException($"Child state [{name}] not found.");
-            }
-
-            if (ActiveStates.Count > 0) { PopState(); }
-
-            PrivatePushState(result);
-        }
-
-        public void PushState(string name)
+        public virtual async Task ChangeState(string name)
         {
             if (!Children.TryGetValue(name, out var result))
             {
                 throw new ApplicationException($"Child state [{name}] not found.");
             }
 
-            PrivatePushState(result);
+            if (ActiveStates.Count > 0) { await PopState(); }
+
+            await InternalPushState(result);
         }
 
-        public void PopState()
+        public async Task PushState(string name)
         {
-            PrivatePopState();
+            if (!Children.TryGetValue(name, out var result))
+            {
+                throw new ApplicationException($"Child state [{name}] not found.");
+            }
+
+            await InternalPushState(result);
         }
 
-        public void TriggerEvent(string id)
+        public async Task PopState()
         {
-            TriggerEvent(id, EventArgs.Empty);
+            await PrivatePopState();
         }
 
-        public void TriggerEvent(string id, EventArgs eventArgs)
+        public async Task TriggerEvent(string id)
+        {
+            await TriggerEvent(id, EventArgs.Empty);
+        }
+
+        public async Task TriggerEvent(string id, EventArgs eventArgs)
         {
             if (ActiveStates.Count > 0)
             {
-                ActiveStates.Peek().TriggerEvent(id, eventArgs);
+                await ActiveStates.Peek().TriggerEvent(id, eventArgs);
                 return;
             }
 
@@ -114,16 +118,16 @@ namespace Karma.Fsm
 
         #region Private Operations
 
-        private void PrivatePopState()
+        private async Task PrivatePopState()
         {
             var result = ActiveStates.Pop();
-            result.Exit();
+            await result.Exit();
         }
 
-        private void PrivatePushState(IState state)
+        private async Task InternalPushState(IState state)
         {
             ActiveStates.Push(state);
-            state.Enter();
+            await state.Enter();
         }
 
         #endregion

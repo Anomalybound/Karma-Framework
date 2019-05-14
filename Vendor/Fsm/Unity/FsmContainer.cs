@@ -1,5 +1,6 @@
 ﻿using Karma.Fsm;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace Karma
 {
@@ -9,11 +10,11 @@ namespace Karma
 
         private bool _running;
 
-        public abstract IState BuildState();
+        public abstract Task<IState> BuildState();
 
-        protected virtual void Awake()
+        protected virtual async void Awake()
         {
-            Root = BuildState();
+            Root = await BuildState();
         }
 
         protected virtual void OnEnable()
@@ -28,7 +29,7 @@ namespace Karma
 
         protected virtual void Update()
         {
-            if (_running) { Root.Update(Time.deltaTime); }
+            if (_running) { Root?.Update(Time.deltaTime); }
         }
     }
 }

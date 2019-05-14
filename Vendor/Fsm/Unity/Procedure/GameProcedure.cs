@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Karma.Procedure
 {
@@ -10,22 +11,22 @@ namespace Karma.Procedure
     {
         public abstract TProcedureIndex Index { get; }
 
-        public override void SetContext(TProcedureController context)
+        public override async Task SetContext(TProcedureController context)
         {
-            base.SetContext(context);
-            Init(context);
+            await base.SetContext(context);
+            await Init(context);
         }
 
-        public sealed override void Enter()
+        public sealed override async Task Enter()
         {
-            base.Enter();
-            Enter(Context);
+            await base.Enter();
+            await Enter(Context);
         }
 
-        public sealed override void Exit()
+        public sealed override async Task Exit()
         {
-            base.Exit();
-            Exit(Context);
+            await base.Exit();
+            await Exit(Context);
         }
 
         public sealed override void Update(float deltaTime)
@@ -34,44 +35,53 @@ namespace Karma.Procedure
             Update(Context, deltaTime);
         }
 
-        public virtual void Init(TProcedureController controller) { }
+        public virtual async Task Init(TProcedureController controller)
+        {
+            await Task.FromResult(default(object));
+        }
 
-        public virtual void Enter(TProcedureController controller) { }
+        public virtual async Task Enter(TProcedureController controller)
+        {
+            await Task.FromResult(default(object));
+        }
 
-        public virtual void Exit(TProcedureController controller) { }
+        public virtual async Task Exit(TProcedureController controller)
+        {
+            await Task.FromResult(default(object));
+        }
 
         public virtual void Update(TProcedureController controller, float deltaTime) { }
 
         #region Facade
 
-        public void ChangeState(TProcedureIndex index)
+        public async Task ChangeState(TProcedureIndex index)
         {
-            Context.ChangeState(index.ToString(CultureInfo.InvariantCulture));
+            await Context.ChangeState(index.ToString(CultureInfo.InvariantCulture));
         }
 
-        public void PushState(TProcedureIndex index)
+        public async Task PushState(TProcedureIndex index)
         {
-            Context.PushState(index.ToString(CultureInfo.InvariantCulture));
+            await Context.PushState(index.ToString(CultureInfo.InvariantCulture));
         }
 
-        public new void ChangeState(string stateName)
+        public new async Task ChangeState(string stateName)
         {
-            Context.ChangeState(stateName);
+            await Context.ChangeState(stateName);
         }
 
-        public new void PushState(string stateName)
+        public new async Task PushState(string stateName)
         {
-            Context.PushState(stateName);
+            await Context.PushState(stateName);
         }
 
-        public new void PopState()
+        public new async Task PopState()
         {
-            Context.PopState();
+            await Context.PopState();
         }
 
-        public new void TriggerEvent(string eventId, EventArgs args)
+        public new async Task TriggerEvent(string eventId, EventArgs args)
         {
-            Context.TriggerEvent(eventId, args);
+            await Context.TriggerEvent(eventId, args);
         }
 
         #endregion
