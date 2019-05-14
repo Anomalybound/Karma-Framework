@@ -52,14 +52,24 @@ namespace Karma
 
         #endregion
 
+        public static object Create(Type contract)
+        {
+            return Instance._container.Resolve(contract, true);
+        }
+
+        public static T Create<T>() where T : class
+        {
+            return Create(typeof(T)) as T;
+        }
+
         public static T Resolve<T>() where T : class
         {
             return Resolve(typeof(T)) as T;
         }
 
-        public static object Resolve(Type contract, bool createMode = false)
+        public static object Resolve(Type contract)
         {
-            return Instance._container.Resolve(contract, createMode);
+            return Instance._container.Resolve(contract);
         }
 
         public static void Inject(object target)

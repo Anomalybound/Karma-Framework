@@ -34,17 +34,8 @@ namespace Karma.UIStack
         private readonly Dictionary<string, Stack<Widget>> PoolingWidgets =
             new Dictionary<string, Stack<Widget>>();
 
-        private static IDependencyContainer _container;
-
-        public static UIStackManager FromInstance(IDependencyContainer container, UIStackManager uiStackManagerPrefab)
+        public static UIStackManager FromInstance(UIStackManager uiStackManagerPrefab)
         {
-            if (_container != null)
-            {
-                Debug.LogError("UI Stack Manager already initialized.");
-                return null;
-            }
-
-            _container = container;
             CollectFactories();
 
             var instance = Instantiate(uiStackManagerPrefab);
@@ -66,16 +57,8 @@ namespace Karma.UIStack
             return instance;
         }
 
-        public static UIStackManager BuildHierarchy(IDependencyContainer container, bool landscapeOrientation = true,
-            Vector2? refResolution = null)
+        public static UIStackManager BuildHierarchy(bool landscapeOrientation = true, Vector2? refResolution = null)
         {
-            if (_container != null)
-            {
-                Debug.LogError("UI Stack Manager already initialized.");
-                return null;
-            }
-
-            _container = container;
             CollectFactories();
 
             var manager = new GameObject("UI Stack Manager").AddComponent<UIStackManager>();
@@ -338,9 +321,8 @@ namespace Karma.UIStack
                     if (!(atts[0] is CustomWidgetFactoryAttribute att)) { continue; }
 
 //                        Debug.Log("Collect " + att.WidgetType);
-                    if (!(Activator.CreateInstance(factoryType) is IWidgetFactory factoryInstance)) { continue; }
+                    if (!(Kar.Create(factoryType) is IWidgetFactory factoryInstance)) { continue; }
 
-                    _container.Inject(factoryInstance);
                     RegisterFactory(att.WidgetType, factoryInstance);
                 }
             }

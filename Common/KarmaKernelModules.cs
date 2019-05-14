@@ -9,29 +9,29 @@ namespace Karma.Common
     {
         [Header("General")]
         [SerializeField]
-        protected bool _enableLog = true;
+        protected bool EnableLog = true;
 
         [Header("UI")]
         [SerializeField]
-        protected bool _isLandscape = true;
+        protected bool IsLandscape = true;
 
         [SerializeField]
-        protected Vector2 _referenceResolution = new Vector2(1920, 1080);
+        protected Vector2 ReferenceResolution = new Vector2(1920, 1080);
 
         [SerializeField]
         [Tooltip("Can left empty.")]
-        protected UIStackManager _uiMgrInstance;
+        protected UIStackManager UiStackInstance;
 
         public override void RegisterBindings()
         {
             // Log
             Container.Bind<ITime, UnityTime>();
-            Container.Bind<ILog, UnityLog>().FromInstance(new UnityLog(_enableLog));
+            Container.Bind<ILog, UnityLog>().FromInstance(new UnityLog(EnableLog));
             Container.Bind<IEventBroker, EventBroker>();
             Container.Bind<IUIStack>().FromMethod(
-                () => _uiMgrInstance != null
-                    ? UIStackManager.FromInstance(Container, _uiMgrInstance)
-                    : UIStackManager.BuildHierarchy(Container, _isLandscape, _referenceResolution)
+                () => UiStackInstance != null
+                    ? UIStackManager.FromInstance(UiStackInstance)
+                    : UIStackManager.BuildHierarchy(IsLandscape, ReferenceResolution)
             );
 
             // View Loader
