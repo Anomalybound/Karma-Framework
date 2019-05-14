@@ -1,4 +1,6 @@
-﻿using Karma.Common;
+﻿using System.Reflection;
+using Karma.Common;
+using Karma.Injection;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,8 +18,12 @@ namespace Karma
                 return;
             }
 
-            kernel = Resources.Load<KarmaKernel>("Karma Kernel");
-            if (kernel != null) { Object.Instantiate(kernel).name = "Karma Kernel"; }
+            var kernelObj = new GameObject("Karma Kernel", typeof(KarmaKernel), typeof(KarmaKernelModules));
+            kernel = kernelObj.GetComponent<KarmaKernel>();
+
+            var array = new MonoModule[] {kernelObj.GetComponent<KarmaKernelModules>()};
+            var fieldInfo = typeof(KarmaKernel).GetField("Modules", BindingFlags.NonPublic | BindingFlags.Instance);
+            fieldInfo?.SetValue(kernel, array);
         }
     }
 }

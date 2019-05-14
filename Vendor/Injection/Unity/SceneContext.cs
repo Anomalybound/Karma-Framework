@@ -11,15 +11,15 @@ namespace Karma.Injection
         public IDependencyContainer Container { get; } = new DependencyContainer();
 
         [SerializeField]
-        private MonoModule[] _modules = { };
+        protected MonoModule[] Modules = { };
 
         protected virtual void Awake()
         {
             if (Context.GlobalContext == null) { Context.SetCurrentContext(this); }
 
-            if (_modules != null)
+            if (Modules != null)
             {
-                foreach (var module in _modules)
+                foreach (var module in Modules)
                 {
                     if (module == null) { continue; }
 
