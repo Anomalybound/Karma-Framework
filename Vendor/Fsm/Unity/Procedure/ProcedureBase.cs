@@ -1,6 +1,6 @@
-﻿using wLib.Fsm;
+﻿using Karma.Fsm;
 
-namespace wLib.Procedure
+namespace Karma.Procedure
 {
     public abstract class ProcedureBase<TProcedureManager> : ContextState<TProcedureManager>
     {

@@ -1,4 +1,4 @@
-﻿namespace wLib.Injection
+﻿namespace Karma.Injection
 {
     public abstract class ModuleBase : IModule
     {

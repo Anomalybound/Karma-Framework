@@ -3,7 +3,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace wLib.Injection
+namespace Karma.Injection
 {
     [ScriptOrder(-10000)]
     public class SceneContext : MonoBehaviour, IContext

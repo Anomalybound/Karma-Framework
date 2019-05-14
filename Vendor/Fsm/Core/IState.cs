@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace wLib.Fsm
+namespace Karma.Fsm
 {
     public interface IState : IPureState
     {

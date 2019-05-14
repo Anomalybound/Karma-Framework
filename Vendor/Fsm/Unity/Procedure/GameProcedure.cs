@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace wLib.Procedure
+namespace Karma.Procedure
 {
     public abstract class
         GameProcedure<TProcedureController, TProcedureIndex> : ProcedureBase<TProcedureController>

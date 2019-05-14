@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace wLib.UIStack
+namespace Karma.UIStack
 {
     [Serializable]
     public struct UIMessage

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace wLib.UIStack
+namespace Karma.UIStack
 {
     public class CustomWidgetFactoryAttribute : Attribute
     {

@@ -1,8 +1,8 @@
-﻿using UnityEditor;
+﻿using Karma.Fsm;
+using UnityEditor;
 using UnityEngine;
-using wLib.Fsm;
 
-namespace wLib
+namespace Karma
 {
     [CustomEditor(typeof(FsmContainer), true)]
     public class FsmContainerEditor : Editor
@@ -58,7 +58,7 @@ namespace wLib
 
                 var rect = GUILayoutUtility.GetLastRect();
                 rect.width = 20;
-                
+
                 GUI.skin.label.normal.textColor = new Color(0f, 0.78f, 0.2f);
                 GUI.Label(rect, "\u2714");
                 GUI.skin.label.normal.textColor = guiCol;

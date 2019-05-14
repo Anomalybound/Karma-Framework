@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using wLib.Fsm;
+﻿using Karma.Fsm;
+using UnityEngine;
 
-namespace wLib
+namespace Karma
 {
     public abstract class FsmContainer : MonoBehaviour
     {

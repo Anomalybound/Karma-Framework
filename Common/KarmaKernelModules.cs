@@ -1,8 +1,7 @@
+using Karma.Injection;
 using Karma.Services;
 using UnityEngine;
-using wLib;
-using wLib.Injection;
-using wLib.UIStack;
+using Karma.UIStack;
 
 namespace Karma.Common
 {
@@ -21,23 +20,22 @@ namespace Karma.Common
 
         [SerializeField]
         [Tooltip("Can left empty.")]
-        protected UIManager _uiMgrInstance;
+        protected UIStackManager _uiMgrInstance;
 
         public override void RegisterBindings()
         {
-            // Essentials
+            // Log
+            Container.Bind<ITime, UnityTime>();
             Container.Bind<ILog, UnityLog>().FromInstance(new UnityLog(_enableLog));
             Container.Bind<IEventBroker, EventBroker>();
-            Container.Bind<IUIManager>().FromMethod(
+            Container.Bind<IUIStack>().FromMethod(
                 () => _uiMgrInstance != null
-                    ? UIManager.FromInstance(Container, _uiMgrInstance)
-                    : UIManager.BuildHierarchy(Container, _isLandscape, _referenceResolution)
+                    ? UIStackManager.FromInstance(Container, _uiMgrInstance)
+                    : UIStackManager.BuildHierarchy(Container, _isLandscape, _referenceResolution)
             );
 
+            // View Loader
             Container.Bind<IViewLoader, ResourcesViewLoader>();
-            Container.Bind<Kar, Kar>().NonLazy();
         }
-
-        public override void Dispose() { }
     }
 }

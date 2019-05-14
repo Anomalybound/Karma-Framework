@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace wLib.Injection
+namespace Karma.Injection
 {
     public class DependencyContainer : IDependencyContainer
     {
+        #region Constants
+
+        public static readonly bool ALLOW_OVERRIDE_BINDING = true;
+
+        #endregion
+
         public readonly Dictionary<Type, Type> Types = new Dictionary<Type, Type>();
 
         public readonly Dictionary<Type, List<MemberInfo>> _memberCaches = new Dictionary<Type, List<MemberInfo>>();
@@ -40,7 +46,8 @@ namespace wLib.Injection
         {
             var binder = new BinderInfo<TImplementation>(this, typeof(TContract));
             CheckBindingCache(typeof(TContract));
-            Types.Add(typeof(TContract), typeof(TImplementation));
+            Types[typeof(TContract)] = typeof(TImplementation);
+//            Types.Add(typeof(TContract), typeof(TImplementation));
 
             return binder;
         }
@@ -193,9 +200,12 @@ namespace wLib.Injection
 
         #region Internal
 
-        private void CheckBindingCache(Type boundType)
+        private void CheckBindingCache(Type bindingType)
         {
-            if (Types.ContainsKey(boundType)) { throw new ApplicationException($"{boundType} already bound."); }
+            if (Types.ContainsKey(bindingType) && !ALLOW_OVERRIDE_BINDING)
+            {
+                throw new ApplicationException($"{bindingType} already bound.");
+            }
         }
 
         private T InternalResolve<T>(bool createMode = false)

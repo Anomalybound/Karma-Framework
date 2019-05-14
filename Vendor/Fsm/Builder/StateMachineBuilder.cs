@@ -1,8 +1,8 @@
-﻿namespace wLib.Fsm.Builder
+﻿namespace Karma.Fsm
 {
-    public class StateMachineBuilder<TState> where TState : StateBase, new()
+    public class StateMachineBuilder<TState> where TState : IBuildableState, new()
     {
-        private StateBase _root;
+        private readonly IBuildableState _root;
 
         public StateMachineBuilder()
         {
@@ -16,12 +16,12 @@
             return new StateBuilder<TState, StateMachineBuilder<TState>>(stateName, this, _root);
         }
 
-        public StateBuilder<T, StateMachineBuilder<TState>> State<T>(string stateName) where T : StateBase, new()
+        public StateBuilder<T, StateMachineBuilder<TState>> State<T>(string stateName) where T : IBuildableState, new()
         {
             return new StateBuilder<T, StateMachineBuilder<TState>>(stateName, this, _root);
         }
 
-        public StateBase Build()
+        public IBuildableState Build()
         {
             return _root;
         }

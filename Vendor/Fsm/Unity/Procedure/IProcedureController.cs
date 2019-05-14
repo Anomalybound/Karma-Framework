@@ -1,4 +1,4 @@
-﻿namespace wLib.Procedure
+﻿namespace Karma.Procedure
 {
     public interface IProcedureController { }
 }

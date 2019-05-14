@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace wLib.Injection
+namespace Karma.Injection
 {
     public abstract class MonoModule : MonoBehaviour, IModule
     {
@@ -13,6 +13,9 @@ namespace wLib.Injection
 
         public abstract void RegisterBindings();
 
-        public abstract void Dispose();
+        public virtual void Dispose()
+        {
+            Container.Dispose();
+        }
     }
 }

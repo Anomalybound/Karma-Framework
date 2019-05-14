@@ -2,20 +2,26 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Karma.Fsm;
 using UnityEngine;
-using wLib.Fsm;
+using Karma.Injection;
 
-namespace wLib.Procedure
+namespace Karma.Procedure
 {
-    public abstract class GameProcedureController<TProcedureController, TProcedureIndex> : FsmContainer,
-        IProcedureController
+    public abstract class GameProcedureController<TProcedureController, TProcedureIndex> : 
+        FsmContainer, IProcedureController
         where TProcedureController : GameProcedureController<TProcedureController, TProcedureIndex>
         where TProcedureIndex : struct, IConvertible
     {
-        private Dictionary<TProcedureIndex, GameProcedure<TProcedureController, TProcedureIndex>> Indices =
+        private readonly Dictionary<TProcedureIndex, GameProcedure<TProcedureController, TProcedureIndex>> Indices =
             new Dictionary<TProcedureIndex, GameProcedure<TProcedureController, TProcedureIndex>>();
 
         private readonly Dictionary<IState, TProcedureIndex> IndexLookup = new Dictionary<IState, TProcedureIndex>();
+
+        [SerializeField]
+        private TProcedureIndex _initState = default(TProcedureIndex);
+
+        public TProcedureIndex InitState => _initState;
 
         public TProcedureIndex Current => IndexLookup[Root.ActiveStates.Peek()];
 
@@ -23,40 +29,49 @@ namespace wLib.Procedure
         {
             var root = new State();
 
+            var context = Context.GlobalContext;
+
             var types = GetType().Assembly.GetTypes()
                 .Where(x => typeof(GameProcedure<TProcedureController, TProcedureIndex>).IsAssignableFrom(x));
 
-            var instances = new List<GameProcedure<TProcedureController, TProcedureIndex>>();
+            var procedures = new List<GameProcedure<TProcedureController, TProcedureIndex>>();
+
             foreach (var type in types)
             {
-                var instance = Activator.CreateInstance(type) as GameProcedure<TProcedureController, TProcedureIndex>;
-                if (instance != null)
+                if (context.Create(type) is GameProcedure<TProcedureController, TProcedureIndex> instance)
                 {
                     instance.SetContext((TProcedureController) this);
-                    instances.Add(instance);
+                    procedures.Add(instance);
                 }
             }
 
-            instances = instances.OrderBy(x => x.Index).ToList();
+            procedures = procedures.OrderBy(x => x.Index).ToList();
 
-            for (var i = 0; i < instances.Count; i++)
+            foreach (var procedure in procedures)
             {
-                var instance = instances[i];
-                var id = instance.Index;
+                var id = procedure.Index;
 
                 if (Indices.ContainsKey(id))
                 {
-                    Debug.LogErrorFormat("{0}[{1}] already added.", id, instance.GetType().Name);
+                    Debug.LogErrorFormat("{0}[{1}] already added.", id, procedure.GetType().Name);
                     continue;
                 }
 
-                Indices.Add(id, instance);
-                IndexLookup.Add(instance, id);
-                root.AddChild(id.ToString(CultureInfo.InvariantCulture), instance);
+                Indices.Add(id, procedure);
+                IndexLookup.Add(procedure, id);
+                root.AddChild(id.ToString(CultureInfo.InvariantCulture), procedure);
             }
 
             Root = root;
-            if (instances.Count > 0) { ChangeState(instances[0].Index); }
+            if (procedures.Count <= 0) { return Root; }
+
+            if (procedures.Any(p => p.Index.Equals(InitState))) { ChangeState(InitState); }
+            else
+            {
+                var first = procedures[0].Index;
+                Kar.Warn($"Procedure of [{InitState}] is no available, change to {first} instead.");
+                ChangeState(first);
+            }
 
             return Root;
         }

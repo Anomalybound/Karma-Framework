@@ -1,13 +1,14 @@
 ﻿using System;
 
-namespace wLib.Fsm.Builder
+namespace Karma.Fsm
 {
-    public class StateBuilder<TState, TParentBuilder> where TState : StateBase, new()
+    public class StateBuilder<TState, TParentBuilder> where TState : IBuildableState, new()
     {
         public TState ContractState { get; }
+        
         public TParentBuilder ParentBuilder { get; }
 
-        public StateBuilder(string name, TParentBuilder parentBuilder, StateBase parent)
+        public StateBuilder(string name, TParentBuilder parentBuilder, IBuildableState parent)
         {
             ParentBuilder = parentBuilder;
             ContractState = new TState();
@@ -21,7 +22,7 @@ namespace wLib.Fsm.Builder
             return new StateBuilder<State, StateBuilder<TState, TParentBuilder>>(name, this, ContractState);
         }
 
-        public StateBuilder<T, StateBuilder<TState, TParentBuilder>> State<T>(string name) where T : StateBase, new()
+        public StateBuilder<T, StateBuilder<TState, TParentBuilder>> State<T>(string name) where T : IBuildableState, new()
         {
             return new StateBuilder<T, StateBuilder<TState, TParentBuilder>>(name, this, ContractState);
         }

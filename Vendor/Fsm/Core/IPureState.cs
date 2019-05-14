@@ -1,4 +1,4 @@
-﻿namespace wLib.Fsm
+﻿namespace Karma.Fsm
 {
     public interface IPureState
     {
@@ -9,6 +9,8 @@
         void Update(float deltaTime);
 
         void Exit();
+
+        float ElapsedTime { get; }
 
         #endregion
     }

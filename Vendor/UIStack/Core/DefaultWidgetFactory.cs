@@ -1,13 +1,12 @@
 ﻿using System.Threading.Tasks;
-using Karma;
 using Object = UnityEngine.Object;
 
-namespace wLib.UIStack
+namespace Karma.UIStack
 {
     [CustomWidgetFactory(typeof(Widget))]
     public class DefaultWidgetFactory : IWidgetFactory<Widget>
     {
-        public async Task<Widget> CreateInstance(IUIManager manager, string name, int assignedId,
+        public async Task<Widget> CreateInstance(IUIStack manager, string name, int assignedId,
             UIMessage message)
         {
             var loader = Kar.Resolve<IViewLoader>();
@@ -25,7 +24,7 @@ namespace wLib.UIStack
             Object.Destroy(widget);
         }
 
-        async Task<IWidget> IWidgetFactory.CreateInstance(IUIManager manager, string name, int assignedId,
+        async Task<IWidget> IWidgetFactory.CreateInstance(IUIStack manager, string name, int assignedId,
             UIMessage message)
         {
             var loader = Kar.Resolve<IViewLoader>();

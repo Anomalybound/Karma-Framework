@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace wLib.Injection
+namespace Karma.Injection
 {
     public class BinderInfo : IBinderInfo
     {

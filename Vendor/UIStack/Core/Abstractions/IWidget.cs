@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using UnityEngine;
 
-namespace wLib.UIStack
+namespace Karma.UIStack
 {
     public interface IWidget
     {
@@ -15,6 +14,6 @@ namespace wLib.UIStack
 
         void DestroyWidget();
 
-        void SetManagerInfo(int id, string path, IUIManager manager, UIMessage message);
+        void SetManagerInfo(int id, string path, IUIStack manager, UIMessage message);
     }
 }

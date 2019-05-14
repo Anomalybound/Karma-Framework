@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Threading.Tasks;
-using Karma;
 using UnityEngine;
-using Object = System.Object;
 
-namespace wLib.UIStack
+namespace Karma.UIStack
 {
     public class Widget : MonoBehaviour, IWidget
     {
@@ -20,15 +17,15 @@ namespace wLib.UIStack
 
         public virtual UILayer Layer => _layer;
 
-        protected IUIManager UIManager { get; private set; }
+        protected IUIStack IuiStack { get; private set; }
 
         protected UIMessage Message { get; private set; } = UIMessage.Empty;
 
-        public void SetManagerInfo(int id, string path, IUIManager manager, UIMessage message)
+        public void SetManagerInfo(int id, string path, IUIStack manager, UIMessage message)
         {
             Id = id;
             Path = path;
-            UIManager = manager;
+            IuiStack = manager;
             Message = message;
         }
 
