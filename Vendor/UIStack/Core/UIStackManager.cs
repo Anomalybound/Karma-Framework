@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Karma.Injection;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Karma.UIStack
@@ -39,7 +40,7 @@ namespace Karma.UIStack
         {
             if (_container != null)
             {
-                Debug.LogError("UI Manager already initialized.");
+                Debug.LogError("UI Stack Manager already initialized.");
                 return null;
             }
 
@@ -70,14 +71,14 @@ namespace Karma.UIStack
         {
             if (_container != null)
             {
-                Debug.LogError("UI Manager already initialized.");
+                Debug.LogError("UI Stack Manager already initialized.");
                 return null;
             }
 
             _container = container;
             CollectFactories();
 
-            var manager = new GameObject("UI Manager").AddComponent<UIStackManager>();
+            var manager = new GameObject("UI Stack Manager").AddComponent<UIStackManager>();
 
             var uiCam = new GameObject("UI Camera", typeof(Camera)).GetComponent<Camera>();
             uiCam.clearFlags = CameraClearFlags.Depth;
@@ -116,6 +117,11 @@ namespace Karma.UIStack
                 }
                 else { layerObj.layer = LayerMask.NameToLayer("UI"); }
             }
+
+            if (FindObjectOfType<EventSystem>() != null) { return manager; }
+
+            var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+            eventSystem.transform.SetParent(manager.transform, false);
 
             return manager;
         }
