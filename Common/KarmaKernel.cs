@@ -10,7 +10,7 @@ namespace Karma.Common
         protected override void Awake()
         {
             base.Awake();
-            KarInstance = Create<Kar>();
+            KarInstance = Singleton<Kar>();
         }
     }
 }

@@ -1,5 +1,3 @@
-using UnityWeld.Binding;
-
 namespace Karma.View
 {
     public abstract class UIView<TViewModel> : UIViewBase, IViewModelProvider where TViewModel : ViewModel
@@ -12,12 +10,12 @@ namespace Karma.View
             else { Kar.Warn($"{context} is not matching {typeof(TViewModel)}"); }
         }
 
-        public object GetViewModel()
+        public virtual object GetViewModel()
         {
             return DataContext;
         }
 
-        public string GetViewModelTypeName()
+        public virtual string GetViewModelTypeName()
         {
             return typeof(TViewModel).FullName;
         }

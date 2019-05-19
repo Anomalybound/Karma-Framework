@@ -4,18 +4,8 @@ namespace Karma.Injection
 {
     public abstract class MonoModule : MonoBehaviour, IModule
     {
-        public IDependencyContainer Container { get; private set; }
+        public abstract void RegisterBindings(IDependencyContainer Container);
 
-        public void SetContainer(IDependencyContainer container)
-        {
-            Container = container;
-        }
-
-        public abstract void RegisterBindings();
-
-        public virtual void Dispose()
-        {
-            Container.Dispose();
-        }
+//        public abstract void UnRegisterBindings(IDependencyContainer container);
     }
 }

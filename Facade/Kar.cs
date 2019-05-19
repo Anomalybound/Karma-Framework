@@ -4,21 +4,21 @@ using Karma.UIStack;
 
 namespace Karma
 {
-    public partial class Kar
+    public sealed partial class Kar
     {
         public static Version Version = new Version("0.0.1");
 
-        private static Kar Instance
+        private static Kar Current
         {
             get
             {
-                if (instance == null) { throw new Exception("Please add KarmaKernel to your bootstrap scene."); }
+                if (current == null) { throw new Exception("Please add KarmaKernel to your bootstrap scene."); }
 
-                return instance;
+                return current;
             }
         }
 
-        private static Kar instance;
+        private static Kar current;
 
         private readonly IDependencyContainer _container;
 
@@ -35,7 +35,7 @@ namespace Karma
             _iuiStack = iuiStack;
             _logger = logger;
 
-            instance = this;
+            current = this;
         }
     }
 }

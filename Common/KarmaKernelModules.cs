@@ -22,20 +22,26 @@ namespace Karma.Common
         [Tooltip("Can left empty.")]
         protected UIStackManager UiStackInstance;
 
-        public override void RegisterBindings()
+        public override void RegisterBindings(IDependencyContainer Container)
         {
             // Log
-            Container.Bind<ITime, UnityTime>();
-            Container.Bind<ILog, UnityLog>().FromInstance(new UnityLog(EnableLog));
-            Container.Bind<IEventBroker, EventBroker>();
-            Container.Bind<IUIStack>().FromMethod(
-                () => UiStackInstance != null
-                    ? UIStackManager.FromInstance(UiStackInstance)
-                    : UIStackManager.BuildHierarchy(IsLandscape, ReferenceResolution)
-            );
+            Container.Bind<ITime>().To<UnityTime>();
+            Container.Bind<ILog>().To<UnityLog>().FromInstance(new UnityLog(EnableLog));
+            Container.Bind<IEventBroker>().To<EventBroker>();
+            Container.Bind<IUIStack>().FromMethod(BuildUIStackInstance);
 
             // View Loader
-            Container.Bind<IViewLoader, ResourcesViewLoader>();
+            Container.Bind<IViewLoader>().To<ResourcesViewLoader>();
+            
+            // Binding Dependencies Network
+            Container.Build();
+        }
+
+        protected IUIStack BuildUIStackInstance(IDependencyContainer container)
+        {
+            return UiStackInstance != null
+                ? UIStackManager.FromInstance(UiStackInstance)
+                : UIStackManager.BuildHierarchy(IsLandscape, ReferenceResolution);
         }
     }
 }

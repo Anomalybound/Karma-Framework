@@ -39,7 +39,7 @@ namespace Karma.Procedure
 
             foreach (var type in types)
             {
-                if (context.Create(type) is GameProcedure<TProcedureController, TProcedureIndex> instance)
+                if (context.Instance(type) is GameProcedure<TProcedureController, TProcedureIndex> instance)
                 {
                     await instance.SetContext((TProcedureController) this);
                     procedures.Add(instance);

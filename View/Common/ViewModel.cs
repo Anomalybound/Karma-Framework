@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using Karma.Injection;
 
 namespace Karma
 {
@@ -10,11 +11,19 @@ namespace Karma
     public abstract class ViewModel : INotifyPropertyChanged, INotifyPropertyChanging
     {
         public static readonly ViewModel Empty = new EmptyViewModel();
-        
+
         private readonly ConcurrentDictionary<string, object> _properties = new ConcurrentDictionary<string, object>();
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         public event PropertyChangingEventHandler PropertyChanging;
+
+        protected IEventBroker ScopedEventBroker { get; }
+
+        protected ViewModel()
+        {
+            ScopedEventBroker = Context.GlobalContext.Instance<IEventBroker>();
+        }
 
         protected bool CallPropertyChangeEvent { get; set; } = true;
 
@@ -28,7 +37,6 @@ namespace Karma
         {
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
         }
-
 
         protected T Get<T>(T defValue = default, [CallerMemberName] string name = null)
         {
@@ -46,13 +54,11 @@ namespace Karma
             if (isExists && Equals(value, getValue))
                 return false;
 
-            if (CallPropertyChangeEvent)
-                OnPropertyChanging(name);
+            if (CallPropertyChangeEvent) { OnPropertyChanging(name); }
 
             _properties.AddOrUpdate(name, value, (s, o) => value);
 
-            if (CallPropertyChangeEvent)
-                OnPropertyChanged(name);
+            if (CallPropertyChangeEvent) { OnPropertyChanged(name); }
 
             return true;
         }

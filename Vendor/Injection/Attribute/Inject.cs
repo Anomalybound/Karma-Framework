@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Karma.Injection
+namespace Karma
 {
     public class Inject : Attribute { }
 }

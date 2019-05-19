@@ -1,66 +1,50 @@
 using System;
-using Karma.Injection;
 using UnityEngine;
 
 namespace Karma
 {
     public partial class Kar
     {
-        #region DiContainer
+        #region Static Facade Methods
 
-        public static T Create<T>() where T : class
+        public static object Instance(Type type)
         {
-            return Create(typeof(T)) as T;
+            return Current._container.Instance(type);
+        }
+
+        public static T Instance<T>() where T : class
+        {
+            return Current._container.Instance<T>();
+        }
+
+        public static object Singleton(Type type)
+        {
+            return Current._container.Singleton(type);
+        }
+
+        public static T Singleton<T>() where T : class
+        {
+            return Current._container.Singleton<T>();
+        }
+
+        public static object Resolve(Type type)
+        {
+            return Current._container.Resolve(type);
         }
 
         public static T Resolve<T>() where T : class
         {
-            return Resolve(typeof(T)) as T;
+            return Current._container.Resolve<T>();
         }
 
-        public static object Create(Type contract)
+        public static T Inject<T>(T target)
         {
-            return Instance._container.Resolve(contract, true);
+            return Current._container.Inject(target);
         }
 
-        public static object Resolve(Type contract)
+        public static void InjectGameObject(GameObject target)
         {
-            return Instance._container.Resolve(contract);
-        }
-
-        public static void Inject(object target)
-        {
-            Instance._container.Inject(target);
-        }
-
-        public static void Inject(GameObject target)
-        {
-            var components = target.GetComponents<MonoBehaviour>();
-            foreach (var mono in components)
-            {
-                if (mono == null) { continue; }
-
-                Inject(mono);
-            }
-        }
-
-        #endregion
-
-        #region Helpers
-
-        public static bool ContainsSingleton(Type type)
-        {
-            return Instance._container.ContainsSingleton(type);
-        }
-
-        public static void AddSingleton(Type type, object instance)
-        {
-            Instance._container.AddSingleton(type, instance);
-        }
-
-        public static void AddTransient(Type type)
-        {
-            Instance._container.AddTransient(type);
+            Current._container.InjectGameObject(target);
         }
 
         #endregion

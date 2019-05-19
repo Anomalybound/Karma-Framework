@@ -1,19 +1,7 @@
-﻿using System;
-
-namespace Karma.Injection
+﻿namespace Karma.Injection
 {
-    public interface IContext
+    public interface IContext : IDependencyResolver
     {
         IDependencyContainer Container { get; }
-
-        object Create(Type type);
-
-        T Create<T>() where T : class;
-
-        object Resolve(Type type);
-
-        T Resolve<T>() where T : class;
-
-        T Inject<T>(T target);
     }
 }

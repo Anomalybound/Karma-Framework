@@ -2,18 +2,8 @@
 {
     public abstract class ModuleBase : IModule
     {
-        public IDependencyContainer Container { get; }
+        public abstract void RegisterBindings(IDependencyContainer Container);
 
-        protected ModuleBase(IDependencyContainer container)
-        {
-            Container = container;
-        }
-
-        public abstract void RegisterBindings();
-
-        public virtual void Dispose()
-        {
-            Container.Dispose();
-        }
+        public abstract void UnRegisterBindings(IDependencyContainer container);
     }
 }

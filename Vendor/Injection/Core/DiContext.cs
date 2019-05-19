@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Karma.Injection
 {
@@ -8,34 +9,55 @@ namespace Karma.Injection
 
         public DiContext()
         {
-            Container = new DependencyContainer();
+            Container = new DiContainer();
 
             if (Context.GlobalContext == null) { Context.SetCurrentContext(this); }
         }
 
-        public object Create(Type type)
+        public object Instance(Type contract, string id = null)
         {
-            return Container.Resolve(type, true);
+            return Container.Instance(contract, id);
         }
 
-        public T Create<T>() where T : class
+        public T Instance<T>(string id = null) where T : class
         {
-            return Create(typeof(T)) as T;
+            return Container.Instance<T>(id);
         }
 
-        public object Resolve(Type type)
+        public object Singleton(Type contract, string id = null)
         {
-            return Container.Resolve(type);
+            return Container.Singleton(contract, id);
         }
 
-        public T Resolve<T>() where T : class
+        public T Singleton<T>(string id = null) where T : class
         {
-            return Resolve(typeof(T)) as T;
+            return Container.Singleton<T>(id);
+        }
+
+        public object Resolve(Type contract, string id = null)
+        {
+            return Container.Resolve(contract, id);
+        }
+
+        public T Resolve<T>(string id = null) where T : class
+        {
+            return Container.Resolve<T>(id);
         }
 
         public T Inject<T>(T target)
         {
             return Container.Inject(target);
+        }
+
+        public void InjectGameObject(GameObject target)
+        {
+            var monoBehaviours = target.GetComponents<MonoBehaviour>();
+            foreach (var monoBehaviour in monoBehaviours)
+            {
+                if (monoBehaviour == null) { continue; }
+
+                Inject(monoBehaviour);
+            }
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace Karma.Injection
+﻿namespace Karma.Injection
 {
-    public interface IModule : IDisposable
+    public interface IModule
     {
-        IDependencyContainer Container { get; }
+        void RegisterBindings(IDependencyContainer Container);
 
-        void RegisterBindings();
+//        void UnRegisterBindings(IDependencyContainer container);
     }
 }

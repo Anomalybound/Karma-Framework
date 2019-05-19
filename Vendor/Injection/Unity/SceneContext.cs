@@ -8,7 +8,7 @@ namespace Karma.Injection
     [ScriptOrder(-10000)]
     public class SceneContext : MonoBehaviour, IContext
     {
-        public IDependencyContainer Container { get; } = new DependencyContainer();
+        public IDependencyContainer Container { get; } = new DiContainer();
 
         [SerializeField]
         protected MonoModule[] Modules = { };
@@ -23,12 +23,11 @@ namespace Karma.Injection
                 {
                     if (module == null) { continue; }
 
-                    module.SetContainer(Container);
-                    module.RegisterBindings();
+                    module.RegisterBindings(Container);
                 }
             }
 
-            var sw = new Stopwatch();
+            var sw = Stopwatch.StartNew();
             sw.Start();
 
             foreach (var go in (GameObject[]) Resources.FindObjectsOfTypeAll(typeof(GameObject)))
@@ -44,41 +43,54 @@ namespace Karma.Injection
             Debug.LogFormat("Inject scene game object finished. cost : {0} ms. ", ms);
         }
 
+        #region Imeplementation of IContext
+
         public void InjectGameObject(GameObject targetGo)
         {
-            var monos = targetGo.GetComponents<MonoBehaviour>();
-            for (var i = 0; i < monos.Length; i++)
+            var monoBehaviours = targetGo.GetComponents<MonoBehaviour>();
+            foreach (var monoBehaviour in monoBehaviours)
             {
-                var mono = monos[i];
-                if (mono == null) { continue; }
+                if (monoBehaviour == null) { continue; }
 
-                Inject(mono);
+                Inject(monoBehaviour);
             }
         }
 
-        public object Create(Type type)
+        public object Instance(Type type, string id = null)
         {
-            return Container.Resolve(type, true);
+            return Container.Instance(type, id);
         }
 
-        public T Create<T>() where T : class
+        public T Instance<T>(string id = null) where T : class
         {
-            return Create(typeof(T)) as T;
+            return Container.Instance<T>(id);
         }
 
-        public object Resolve(Type type)
+        public object Singleton(Type contract, string id = null)
         {
-            return Container.Resolve(type);
+            return Container.Singleton(contract, id);
         }
 
-        public T Resolve<T>() where T : class
+        public T Singleton<T>(string id = null) where T : class
         {
-            return Resolve(typeof(T)) as T;
+            return Container.Singleton<T>(id);
+        }
+
+        public object Resolve(Type contract, string id = null)
+        {
+            return Container.Resolve(contract, id);
+        }
+
+        public T Resolve<T>(string id = null) where T : class
+        {
+            return Container.Resolve<T>(id);
         }
 
         public T Inject<T>(T target)
         {
             return Container.Inject(target);
         }
+
+        #endregion
     }
 }
