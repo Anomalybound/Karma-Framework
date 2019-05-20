@@ -7,34 +7,34 @@ namespace Karma
     {
         #region Static Facade Methods
 
-        public static object Instance(Type type)
+        public static object Instance(Type type, string id = null)
         {
-            return Current._container.Instance(type);
+            return Current._container.Instance(type, id);
         }
 
-        public static T Instance<T>() where T : class
+        public static object Singleton(Type type, string id = null)
         {
-            return Current._container.Instance<T>();
+            return Current._container.Singleton(type, id);
         }
 
-        public static object Singleton(Type type)
+        public static object Resolve(Type type, string id = null)
         {
-            return Current._container.Singleton(type);
+            return Current._container.Resolve(type, id);
         }
 
-        public static T Singleton<T>() where T : class
+        public static T Singleton<T>(string id = null) where T : class
         {
-            return Current._container.Singleton<T>();
+            return Current._container.Singleton<T>(id);
         }
 
-        public static object Resolve(Type type)
+        public static T Instance<T>(string id = null) where T : class
         {
-            return Current._container.Resolve(type);
+            return Current._container.Instance<T>(id);
         }
 
-        public static T Resolve<T>() where T : class
+        public static T Resolve<T>(string id = null) where T : class
         {
-            return Current._container.Resolve<T>();
+            return Current._container.Resolve<T>(id);
         }
 
         public static T Inject<T>(T target)

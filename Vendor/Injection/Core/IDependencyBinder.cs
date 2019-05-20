@@ -6,21 +6,21 @@ namespace Karma.Injection
     {
         #region Bind
 
-        IBinderInfo Bind(Type contractType);
+        IBindingInfo Bind(Type contractType);
 
-        IBinderInfo BindInterfaces(Type implementationType);
+        IBindingInfo BindInterfaces(Type implementationType);
 
-        IBinderInfo BindAll(Type implementType);
+        IBindingInfo BindAll(Type implementType);
 
-        IBinderInfo BindInstance(Type instanceType, object instance);
+        IBindingInfo BindInstance(Type instanceType, object instance);
 
-        IBinderInfo<TContract> Bind<TContract>();
+        IBindingInfo<TContract> Bind<TContract>();
 
-        IBinderInfo<TImplementation> BindInterfaces<TImplementation>();
+        IBindingInfo<TImplementation> BindInterfaces<TImplementation>();
 
-        IBinderInfo<TImplementation> BindAll<TImplementation>();
+        IBindingInfo<TImplementation> BindAll<TImplementation>();
 
-        IBinderInfo<TImplementation> BindInstance<TImplementation>(TImplementation instance);
+        IBindingInfo<TImplementation> BindInstance<TImplementation>(TImplementation instance);
 
         #endregion
     }

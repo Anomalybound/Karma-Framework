@@ -16,7 +16,7 @@ namespace Karma.Injection
         FromMethods,
     }
 
-    public class BindingInfo : IBinderInfo
+    public class BindingInfo : IBindingInfo
     {
         public IDependencyContainer Container { get; }
 
@@ -42,7 +42,7 @@ namespace Karma.Injection
             ContractTypes = new List<Type>();
         }
 
-        public IBinderInfo To(Type implementationType)
+        public IBindingInfo To(Type implementationType)
         {
             ToCheck(implementationType);
             ImplementType = implementationType;
@@ -50,7 +50,7 @@ namespace Karma.Injection
             return this;
         }
 
-        public IBinderInfo To<TImplementation>()
+        public IBindingInfo To<TImplementation>()
         {
             ToCheck(typeof(TImplementation));
             ImplementType = typeof(TImplementation);
@@ -58,28 +58,28 @@ namespace Karma.Injection
             return this;
         }
 
-        public IBinderInfo AsSingleton()
+        public IBindingInfo AsSingleton()
         {
             As = AsType.Singleton;
 
             return this;
         }
 
-        public IBinderInfo AsTransient()
+        public IBindingInfo AsTransient()
         {
             As = AsType.Transient;
 
             return this;
         }
 
-        public IBinderInfo FromNew()
+        public IBindingInfo FromNew()
         {
             From = FromType.FromNew;
 
             return this;
         }
 
-        public IBinderInfo FromInstance(object instance)
+        public IBindingInfo FromInstance(object instance)
         {
             BindingInstance = instance;
             From = FromType.FromInstance;
@@ -87,7 +87,7 @@ namespace Karma.Injection
             return this;
         }
 
-        public IBinderInfo FromMethod(Func<IDependencyContainer, object> method)
+        public IBindingInfo FromMethod(Func<IDependencyContainer, object> method)
         {
             BuildMethod = method;
             From = FromType.FromMethods;
@@ -95,7 +95,7 @@ namespace Karma.Injection
             return this;
         }
 
-        public IBinderInfo WithId(string id)
+        public IBindingInfo WithId(string id)
         {
             BindingId = id;
 
@@ -115,49 +115,49 @@ namespace Karma.Injection
         #endregion
     }
 
-    public class BindingInfo<TContract> : BindingInfo, IBinderInfo<TContract>
+    public class BindingInfo<TContract> : BindingInfo, IBindingInfo<TContract>
     {
         public BindingInfo(IDependencyContainer container) : base(container) { }
 
-        public new IBinderInfo<TContract> To(Type implementType)
+        public new IBindingInfo<TContract> To(Type implementType)
         {
             ToCheck(implementType);
             ImplementType = implementType;
             return this;
         }
 
-        public new IBinderInfo<TContract> To<TImplement>()
+        public new IBindingInfo<TContract> To<TImplement>()
         {
             ToCheck(typeof(TImplement));
             ImplementType = typeof(TImplement);
             return this;
         }
 
-        public new IBinderInfo<TContract> AsSingleton()
+        public new IBindingInfo<TContract> AsSingleton()
         {
             base.AsSingleton();
             return this;
         }
 
-        public new IBinderInfo<TContract> AsTransient()
+        public new IBindingInfo<TContract> AsTransient()
         {
             base.AsTransient();
             return this;
         }
 
-        public new IBinderInfo<TContract> FromNew()
+        public new IBindingInfo<TContract> FromNew()
         {
             base.FromNew();
             return this;
         }
 
-        public IBinderInfo<TContract> FromInstance(TContract instance)
+        public IBindingInfo<TContract> FromInstance(TContract instance)
         {
             base.FromInstance(instance);
             return this;
         }
 
-        public IBinderInfo<TContract> FromMethod(Func<IDependencyContainer, TContract> method)
+        public IBindingInfo<TContract> FromMethod(Func<IDependencyContainer, TContract> method)
         {
             BuildMethod = container => method(container);
             From = FromType.FromMethods;
@@ -165,7 +165,7 @@ namespace Karma.Injection
             return this;
         }
 
-        public new IBinderInfo<TContract> WithId(string id)
+        public new IBindingInfo<TContract> WithId(string id)
         {
             base.WithId(id);
 

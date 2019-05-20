@@ -30,8 +30,15 @@ namespace Karma.Common
             Container.Bind<IEventBroker>().To<EventBroker>();
             Container.Bind<IUIStack>().FromMethod(BuildUIStackInstance);
 
+            // Default Widget Factory
+            Container.Bind<DefaultWidgetFactory>();
+
             // View Loader
             Container.Bind<IViewLoader>().To<ResourcesViewLoader>();
+
+            // Essentials
+            Container.BindInstance(Container);
+            Container.BindAll<Kar>();
         }
 
         protected IUIStack BuildUIStackInstance(IDependencyContainer container)

@@ -9,7 +9,7 @@ namespace Karma.Injection
 {
     public class DiContainer : IDependencyContainer
     {
-        protected readonly List<IBinderInfo> BinderInfos = new List<IBinderInfo>();
+        protected readonly List<IBindingInfo> BinderInfos = new List<IBindingInfo>();
 
         protected readonly List<IModule> Modules = new List<IModule>();
 
@@ -38,9 +38,17 @@ namespace Karma.Injection
             foreach (var binderInfo in BinderInfos) { Build(binderInfo); }
         }
 
-        private void Build(IBinderInfo binderInfo)
+        private void Build(IBindingInfo bindingInfo)
         {
-            if (!(binderInfo is BindingInfo info)) { return; }
+            if (!(bindingInfo is BindingInfo info)) { return; }
+
+            if (info.ContractTypes.Count <= 0)
+            {
+                throw new Exception($"Fatal error, no contract types included in building binding info.");
+            }
+
+            // add contract type as default oen if implement type is not assigned
+            if (info.ImplementType == null) { info.To(info.ContractTypes[0]); }
 
             foreach (var contractType in info.ContractTypes)
             {
@@ -81,7 +89,7 @@ namespace Karma.Injection
 
         #region Binds
 
-        public IBinderInfo Bind(Type contractType)
+        public IBindingInfo Bind(Type contractType)
         {
             var info = new BindingInfo(this);
             BindContractType(info, contractType);
@@ -90,7 +98,7 @@ namespace Karma.Injection
             return info;
         }
 
-        public IBinderInfo BindInterfaces(Type implementationType)
+        public IBindingInfo BindInterfaces(Type implementationType)
         {
             var info = new BindingInfo(this);
             var interfaces = implementationType.GetInterfaces();
@@ -101,7 +109,7 @@ namespace Karma.Injection
             return info;
         }
 
-        public IBinderInfo BindAll(Type implementType)
+        public IBindingInfo BindAll(Type implementType)
         {
             var info = new BindingInfo(this);
             var interfaces = implementType.GetInterfaces();
@@ -114,12 +122,12 @@ namespace Karma.Injection
             return info.To(implementType);
         }
 
-        public IBinderInfo BindInstance(Type instanceType, object instance)
+        public IBindingInfo BindInstance(Type instanceType, object instance)
         {
             return Bind(instanceType).FromInstance(instance);
         }
 
-        public IBinderInfo<TContract> Bind<TContract>()
+        public IBindingInfo<TContract> Bind<TContract>()
         {
             var info = new BindingInfo<TContract>(this);
             BindContractType(info, typeof(TContract));
@@ -128,7 +136,7 @@ namespace Karma.Injection
             return info;
         }
 
-        public IBinderInfo<TImplementation> BindInterfaces<TImplementation>()
+        public IBindingInfo<TImplementation> BindInterfaces<TImplementation>()
         {
             var info = new BindingInfo<TImplementation>(this);
             var interfaces = typeof(TImplementation).GetInterfaces();
@@ -140,7 +148,7 @@ namespace Karma.Injection
             return info;
         }
 
-        public IBinderInfo<TImplementation> BindAll<TImplementation>()
+        public IBindingInfo<TImplementation> BindAll<TImplementation>()
         {
             var info = new BindingInfo<TImplementation>(this);
             var interfaces = typeof(TImplementation).GetInterfaces();
@@ -153,7 +161,7 @@ namespace Karma.Injection
             return info.To<TImplementation>();
         }
 
-        public IBinderInfo<TImplementation> BindInstance<TImplementation>(TImplementation instance)
+        public IBindingInfo<TImplementation> BindInstance<TImplementation>(TImplementation instance)
         {
             return Bind<TImplementation>().FromInstance(instance);
         }
@@ -285,7 +293,10 @@ namespace Karma.Injection
 
         protected object OperationHelper(Func<BindingInfo, object> operation, Type contractType, string id)
         {
-            if (!ContractTypeLookup.TryGetValue((id, contractType), out var binderInfos)) { return null; }
+            if (!ContractTypeLookup.TryGetValue((id, contractType), out var binderInfos))
+            {
+                throw new Exception($"Resolve type: {contractType} with id: {id} failed!");
+            }
 
             if (binderInfos.Count == 0) { throw new Exception($"Can not resolve type: {contractType}."); }
 
