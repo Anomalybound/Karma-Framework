@@ -19,8 +19,8 @@ namespace Karma.Injection
         protected readonly Dictionary<(string, Type), List<BindingInfo>> ContractTypeLookup =
             new Dictionary<(string, Type), List<BindingInfo>>();
 
-        protected readonly Dictionary<Type, List<MemberInfo>> MemberInfoCaches =
-            new Dictionary<Type, List<MemberInfo>>();
+        protected readonly Dictionary<Type, List<(MemberInfo memberInfo, string id)>> MemberInfoCaches =
+            new Dictionary<Type, List<(MemberInfo, string)>>();
 
         protected readonly Queue<object> PendingInjectionQueue = new Queue<object>();
 
@@ -187,20 +187,22 @@ namespace Karma.Injection
 
             if (!MemberInfoCaches.TryGetValue(contractType, out var injectedMembers))
             {
-                injectedMembers = new List<MemberInfo>();
+                injectedMembers = new List<(MemberInfo, string)>();
                 var members = contractType
                     .GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                     .Where(x => x.CustomAttributes.Any(a => a.AttributeType == typeof(Inject)));
 
                 var memberInfos = members as MemberInfo[] ?? members.ToArray();
-                injectedMembers.AddRange(memberInfos);
+                var mappedInfos =
+                    memberInfos.Select(m => ValueTuple.Create(m, m.GetCustomAttribute<Inject>().BindingId));
+                injectedMembers.AddRange(mappedInfos);
 
                 MemberInfoCaches.Add(contractType, injectedMembers);
             }
 
             var memberInfoCaches = MemberInfoCaches[contractType];
 
-            foreach (var memberInfo in memberInfoCaches)
+            foreach (var (memberInfo, id) in memberInfoCaches)
             {
                 object instance;
                 switch (memberInfo.MemberType)
@@ -209,8 +211,17 @@ namespace Karma.Injection
                         var fieldInfo = memberInfo as FieldInfo;
                         if (fieldInfo != null)
                         {
-                            instance = Resolve(fieldInfo.FieldType);
+                            instance = Resolve(fieldInfo.FieldType, id);
                             fieldInfo.SetValue(target, instance);
+                        }
+
+                        break;
+                    case MemberTypes.Property:
+                        var propertyInfo = memberInfo as PropertyInfo;
+                        if (propertyInfo != null && propertyInfo.SetMethod != null)
+                        {
+                            instance = Resolve(propertyInfo.PropertyType, id);
+                            propertyInfo.SetValue(target, instance);
                         }
 
                         break;
@@ -228,15 +239,6 @@ namespace Karma.Injection
                             }
 
                             methodInfo.Invoke(target, invokeParameter);
-                        }
-
-                        break;
-                    case MemberTypes.Property:
-                        var propertyInfo = memberInfo as PropertyInfo;
-                        if (propertyInfo != null && propertyInfo.SetMethod != null)
-                        {
-                            instance = Resolve(propertyInfo.PropertyType);
-                            propertyInfo.SetValue(target, instance);
                         }
 
                         break;
@@ -342,13 +344,11 @@ namespace Karma.Injection
             var targetType = info.ImplementType;
             switch (info.From)
             {
-                case FromType.FromInstance:
-                    return info.BindingInstance;
                 case FromType.FromNew:
                     var constructors =
                         targetType.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Default);
 
-                    // Only react to the first constructor
+                    // Only react to the first available constructor
                     for (var j = 0; j < constructors.Length;)
                     {
                         var constructor = constructors[j];
@@ -357,13 +357,16 @@ namespace Karma.Injection
                         if (parameterInfos.Length == 0) { return Activator.CreateInstance(targetType); }
 
                         var parameters = new List<object>(parameterInfos.Length);
-                        parameters.AddRange(parameterInfos.Select(parameterInfo => Resolve(parameterInfo.ParameterType)));
+                        var resolvedData = parameterInfos.Select(parameterInfo => Resolve(parameterInfo.ParameterType));
+                        parameters.AddRange(resolvedData);
 
-                        return constructor.Invoke(parameters.ToArray());
+                        return Inject(constructor.Invoke(parameters.ToArray()));
                     }
 
                     throw new Exception($"Unable to use From New Scope on {targetType}, no suitable Constructor");
 
+                case FromType.FromInstance:
+                    return info.BindingInstance;
                 case FromType.FromMethods:
                     return info.BuildMethod.Invoke(this);
                 default:

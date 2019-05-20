@@ -17,6 +17,9 @@ namespace Karma.Injection
         {
             if (Context.GlobalContext == null) { Context.SetCurrentContext(this); }
 
+            var sw = Stopwatch.StartNew();
+            sw.Start();
+
             if (Modules != null)
             {
                 foreach (var module in Modules)
@@ -27,8 +30,7 @@ namespace Karma.Injection
                 }
             }
 
-            var sw = Stopwatch.StartNew();
-            sw.Start();
+            Container.Build();
 
             foreach (var go in (GameObject[]) Resources.FindObjectsOfTypeAll(typeof(GameObject)))
             {
@@ -39,8 +41,7 @@ namespace Karma.Injection
             }
 
             sw.Stop();
-            var ms = sw.ElapsedMilliseconds;
-            Debug.LogFormat("Inject scene game object finished. cost : {0} ms. ", ms);
+            Debug.LogFormat($"Scene context setup finished, cost : {sw.ElapsedMilliseconds}ms. ");
         }
 
         #region Imeplementation of IContext

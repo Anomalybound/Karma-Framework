@@ -32,9 +32,6 @@ namespace Karma.Common
 
             // View Loader
             Container.Bind<IViewLoader>().To<ResourcesViewLoader>();
-            
-            // Binding Dependencies Network
-            Container.Build();
         }
 
         protected IUIStack BuildUIStackInstance(IDependencyContainer container)
