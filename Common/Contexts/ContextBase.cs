@@ -1,13 +1,14 @@
 ﻿using System;
+using Hermit.Injection;
 using UnityEngine;
 
-namespace Hermit.Injection
+namespace Hermit.Common
 {
-    public class DiContext : IContext
+    public class ContextBase : IContext
     {
         public IDependencyContainer Container { get; }
 
-        public DiContext()
+        public ContextBase()
         {
             Container = new DiContainer();
 

@@ -14,11 +14,6 @@ namespace Hermit.View
         {
             return DataContext;
         }
-
-        public virtual string GetViewModelTypeName()
-        {
-            return typeof(TViewModel).FullName;
-        }
     }
 
     public abstract class UIView : UIView<EmptyViewModel>
