@@ -1,0 +1,15 @@
+[submodule "Vender/Fsm"]
+	path = Vender/Fsm
+	url = git@github.com:cushmily/wFsm.git
+[submodule "Vender/Injection"]
+	path = Vender/Injection
+	url = git@github.com:cushmily/wInjection.git
+[submodule "Vender/Promise"]
+	path = Vender/Promise
+	url = git@github.com:cushmily/wPromise.git
+[submodule "Vender/UIStack"]
+	path = Vender/UIStack
+	url = git@github.com:cushmily/wUI.git
+[submodule "Vender/Misc"]
+	path = Vender/Misc
+	url = git@github.com:cushmily/wMisc.git
