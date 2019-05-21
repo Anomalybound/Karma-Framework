@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Karma.Fsm;
+using Hermit.Fsm;
 using UnityEngine;
-using Karma.Injection;
+using Hermit.Injection;
 
-namespace Karma.Procedure
+namespace Hermit.Procedure
 {
     public abstract class GameProcedureController<TProcedureController, TProcedureIndex> :
         FsmContainer, IProcedureController
@@ -39,7 +39,7 @@ namespace Karma.Procedure
 
             foreach (var type in types)
             {
-                if (context.Instance(type) is GameProcedure<TProcedureController, TProcedureIndex> instance)
+                if (context.Create(type) is GameProcedure<TProcedureController, TProcedureIndex> instance)
                 {
                     await instance.SetContext((TProcedureController) this);
                     procedures.Add(instance);
@@ -70,7 +70,7 @@ namespace Karma.Procedure
             else
             {
                 var first = procedures[0].Index;
-                Kar.Warn($"Procedure of [{InitState}] is no available, change to {first} instead.");
+                Her.Warn($"Procedure of [{InitState}] is no available, change to {first} instead.");
                 await ChangeState(first);
             }
 

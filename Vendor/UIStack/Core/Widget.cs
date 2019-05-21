@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Karma.UIStack
+namespace Hermit.UIStack
 {
     public class Widget : MonoBehaviour, IWidget
     {

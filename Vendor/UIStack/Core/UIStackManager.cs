@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Karma.Injection;
+using Hermit.Injection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Karma.UIStack
+namespace Hermit.UIStack
 {
     public enum UILayer
     {
@@ -315,15 +315,14 @@ namespace Karma.UIStack
             {
                 if (!factoryType.IsAbstract && !factoryType.IsInterface)
                 {
-                    var atts = factoryType.GetCustomAttributes(typeof(CustomWidgetFactoryAttribute), true);
-                    if (atts.Length <= 0) { continue; }
+                    var attributes = factoryType.GetCustomAttributes(typeof(CustomWidgetFactoryAttribute), true);
+                    if (attributes.Length <= 0) { continue; }
 
-                    if (!(atts[0] is CustomWidgetFactoryAttribute att)) { continue; }
+                    if (!(attributes[0] is CustomWidgetFactoryAttribute attribute)) { continue; }
 
-//                        Debug.Log("Collect " + att.WidgetType);
-                    if (!(Context.GlobalContext.Instance(factoryType) is IWidgetFactory factoryInstance)) { continue; }
+                    if (!(Context.GlobalContext.Create(factoryType) is IWidgetFactory factoryInstance)) { continue; }
 
-                    RegisterFactory(att.WidgetType, factoryInstance);
+                    RegisterFactory(attribute.WidgetType, factoryInstance);
                 }
             }
         }

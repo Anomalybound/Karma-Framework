@@ -1,7 +1,7 @@
 using UnityEditor;
-using Karma.Procedure;
+using Hermit.Procedure;
 
-namespace Karma
+namespace Hermit
 {
     [CustomEditor(typeof(GameProcedureController<,>), true)]
     public class GameProcedureControllerEditor : FsmContainerEditor

@@ -1,8 +1,8 @@
-﻿using Karma.Fsm;
+﻿using Hermit.Fsm;
 using UnityEngine;
 using System.Threading.Tasks;
 
-namespace Karma
+namespace Hermit
 {
     public abstract class FsmContainer : MonoBehaviour
     {

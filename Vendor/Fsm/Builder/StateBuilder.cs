@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Karma.Fsm
+namespace Hermit.Fsm
 {
     public class StateBuilder<TState, TParentBuilder> where TState : IBuildableState, new()
     {

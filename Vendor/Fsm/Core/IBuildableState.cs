@@ -1,6 +1,6 @@
 using System;
 
-namespace Karma.Fsm
+namespace Hermit.Fsm
 {
     public interface IBuildableState : IState
     {

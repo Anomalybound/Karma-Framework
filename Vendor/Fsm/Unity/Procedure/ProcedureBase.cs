@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Karma.Fsm;
+using Hermit.Fsm;
 
-namespace Karma.Procedure
+namespace Hermit.Procedure
 {
     public abstract class ProcedureBase<TProcedureManager> : ContextState<TProcedureManager>
     {

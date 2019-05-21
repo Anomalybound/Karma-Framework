@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace Karma.Injection
+namespace Hermit.Injection
 {
     public class DiContainer : IDependencyContainer
     {
@@ -64,27 +64,49 @@ namespace Karma.Injection
 
         private void BindEnumerableType(string id, Type contractType, BindingInfo info)
         {
-            var enumerableType = GetEnumerableType(contractType);
-            if (!ContractTypeLookup.TryGetValue((id, enumerableType), out var binderInfos)) { return; }
+            var enumerableTypes = GetEnumerableTypes(contractType);
+            var previousBindingInfos = ContractTypeLookup[(id, contractType)];
+            var newBindingInfos = new List<BindingInfo> {info};
+            newBindingInfos.AddRange(previousBindingInfos);
 
-            if (binderInfos.Contains(info))
+            foreach (var enumerableType in enumerableTypes)
             {
-                Debug.Log($"Binding cType: {contractType} eType: {enumerableType}, info: {info}");
+                if (!ContractTypeLookup.TryGetValue((id, enumerableType), out var binderInfos))
+                {
+                    ContractTypeLookup.Add((id, enumerableType), newBindingInfos);
+                    continue;
+                }
+
+                if (binderInfos.Contains(info))
+                {
+                    Debug.Log($"Binding cType: {contractType} eType: {enumerableType}, info: {info}");
+                }
+                else { binderInfos.Add(info); }
             }
-            else { binderInfos.Add(info); }
         }
 
-        protected readonly Dictionary<Type, Type> EnumerableTypeCache = new Dictionary<Type, Type>();
+        protected readonly Dictionary<Type, Type[]> EnumerableTypeCache = new Dictionary<Type, Type[]>();
 
-        private Type GetEnumerableType(Type contractType)
+        private IEnumerable<Type> GetEnumerableTypes(Type contractType)
         {
             if (EnumerableTypeCache.TryGetValue(contractType, out var ret)) { return ret; }
 
-            var enumerableType = typeof(IEnumerable<>).MakeGenericType(contractType);
+            var listType = typeof(List<>).MakeGenericType(contractType);
+            var iListType = typeof(IList<>).MakeGenericType(contractType);
+            var iCollectionType = typeof(ICollection<>).MakeGenericType(contractType);
+            var iEnumerableType = typeof(IEnumerable<>).MakeGenericType(contractType);
+            var iReadOnlyListType = typeof(IReadOnlyList<>).MakeGenericType(contractType);
+            var iReadOnlyCollectionType = typeof(IReadOnlyCollection<>).MakeGenericType(contractType);
 
-            EnumerableTypeCache.Add(contractType, enumerableType);
+            var types = new[]
+            {
+                listType, iListType, iCollectionType,
+                iEnumerableType, iReadOnlyListType, iReadOnlyCollectionType
+            };
 
-            return enumerableType;
+            EnumerableTypeCache.Add(contractType, types);
+
+            return types;
         }
 
         #region Binds
@@ -183,6 +205,13 @@ namespace Karma.Injection
             return OperationHelper(Singleton, contract, id);
         }
 
+        public object Create(Type type, string id = null)
+        {
+            return ContractTypeLookup.ContainsKey((id, type))
+                ? Instance(type, id)
+                : CreateInstanceFromNew(type);
+        }
+
         public void InjectGameObject(GameObject target)
         {
             var behaviours = target.GetComponents<MonoBehaviour>();
@@ -256,6 +285,11 @@ namespace Karma.Injection
             return target;
         }
 
+        public T Create<T>(string id = null) where T : class
+        {
+            return Create(typeof(T), id) as T;
+        }
+
         public T Instance<T>(string id = null) where T : class
         {
             return Instance(typeof(T), id) as T;
@@ -302,17 +336,21 @@ namespace Karma.Injection
 
             if (binderInfos.Count == 1) { return operation.Invoke(binderInfos[0]); }
 
-            var enumeratorType = typeof(List<>).MakeGenericType(contractType);
+            // Resolving Enumerable Type
+            var enumeratorType = typeof(List<>).MakeGenericType(contractType.GenericTypeArguments[0]);
 
             if (!(Activator.CreateInstance(enumeratorType) is IList list))
             {
                 throw new Exception($"Something went wrong when resolving of type: {contractType}.");
             }
 
-            // Resolving Enumerable Type
-            foreach (var binderInfo in binderInfos) { list.Add(operation.Invoke(binderInfo)); }
+            foreach (var binderInfo in binderInfos)
+            {
+                var instance = operation.Invoke(binderInfo);
+                list.Add(instance);
+            }
 
-            return enumeratorType;
+            return list;
         }
 
         protected object Resolve(BindingInfo info)
@@ -323,59 +361,18 @@ namespace Karma.Injection
                     return Singleton(info);
 
                 case AsType.Transient:
-                    return Create(info);
+                    return Instance(info);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        protected object Instance(BindingInfo info) => Create(info);
-
-        protected object Singleton(BindingInfo info)
+        protected object Instance(BindingInfo info)
         {
-            object ret = null;
-
-            var id = info.BindingId;
-            foreach (var contractType in info.ContractTypes)
-            {
-                if (SingletonInstance.TryGetValue((id, contractType), out ret)) { break; }
-            }
-
-            // No instances were found, create new instance
-            if (ret != null) { return ret; }
-
-            ret = Create(info);
-            foreach (var contractType in info.ContractTypes) { SingletonInstance.Add((id, contractType), ret); }
-
-            return ret;
-        }
-
-        protected object Create(BindingInfo info)
-        {
-            var targetType = info.ImplementType;
             switch (info.From)
             {
                 case FromType.FromNew:
-                    var constructors =
-                        targetType.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Default);
-
-                    // Only react to the first available constructor
-                    for (var j = 0; j < constructors.Length;)
-                    {
-                        var constructor = constructors[j];
-                        var parameterInfos = constructor.GetParameters();
-
-                        if (parameterInfos.Length == 0) { return Activator.CreateInstance(targetType); }
-
-                        var parameters = new List<object>(parameterInfos.Length);
-                        var resolvedData = parameterInfos.Select(parameterInfo => Resolve(parameterInfo.ParameterType));
-                        parameters.AddRange(resolvedData);
-
-                        return Inject(constructor.Invoke(parameters.ToArray()));
-                    }
-
-                    throw new Exception($"Unable to use From New Scope on {targetType}, no suitable Constructor");
-
+                    return CreateInstanceFromNew(info.ImplementType);
                 case FromType.FromInstance:
                     return info.BindingInstance;
                 case FromType.FromMethods:
@@ -385,9 +382,46 @@ namespace Karma.Injection
             }
         }
 
+        protected object Singleton(BindingInfo info)
+        {
+            var id = info.BindingId;
+            var implementType = info.ImplementType;
+
+            // No instances were found, create new instance
+            if (SingletonInstance.TryGetValue((id, implementType), out var ret)) { return ret; }
+
+            ret = Instance(info);
+            SingletonInstance.Add((id, implementType), ret);
+
+            return ret;
+        }
+
         #endregion
 
         #region Helpers
+
+        protected object CreateInstanceFromNew(Type targetType)
+        {
+            var constructors =
+                targetType.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Default);
+
+            // Only react to the first available constructor
+            for (var j = 0; j < constructors.Length;)
+            {
+                var constructor = constructors[j];
+                var parameterInfos = constructor.GetParameters();
+
+                if (parameterInfos.Length == 0) { return Activator.CreateInstance(targetType); }
+
+                var parameters = new List<object>(parameterInfos.Length);
+                var resolvedData = parameterInfos.Select(parameterInfo => Resolve(parameterInfo.ParameterType));
+                parameters.AddRange(resolvedData);
+
+                return Inject(constructor.Invoke(parameters.ToArray()));
+            }
+
+            throw new Exception($"Unable to use From New Scope on {targetType}, no suitable Constructor");
+        }
 
         public void BindContractType(BindingInfo info, Type contractType)
         {

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Karma.DataBindings
+namespace Hermit.DataBindings
 {
     [CustomEditor(typeof(OneWayDataBinding))]
     public class OneWayDataBindingEditor : Editor

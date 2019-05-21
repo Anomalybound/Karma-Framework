@@ -1,10 +1,14 @@
 using System;
 using UnityEngine;
 
-namespace Karma.Injection
+namespace Hermit.Injection
 {
     public interface IDependencyResolver
     {
+        object Create(Type type, string id = null);
+
+        T Create<T>(string id = null) where T : class;
+
         object Instance(Type contract, string id = null);
 
         T Instance<T>(string id = null) where T : class;

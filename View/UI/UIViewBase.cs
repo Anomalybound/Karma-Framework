@@ -1,6 +1,6 @@
-using Karma.UIStack;
+using Hermit.UIStack;
 
-namespace Karma.View
+namespace Hermit.View
 {
     public abstract class UIViewBase : Widget, IUIView
     {

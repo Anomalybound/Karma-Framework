@@ -1,4 +1,4 @@
-﻿namespace Karma
+﻿namespace Hermit
 {
     /// <summary>
     /// Prototype for subscribers action.

@@ -1,8 +1,8 @@
-﻿using Karma.Fsm;
+﻿using Hermit.Fsm;
 using UnityEditor;
 using UnityEngine;
 
-namespace Karma
+namespace Hermit
 {
     [CustomEditor(typeof(FsmContainer), true)]
     public class FsmContainerEditor : Editor

@@ -3,7 +3,7 @@
 //using System.Linq;
 //using System.Reflection;
 //
-//namespace Karma.Injection
+//namespace Hermit.Injection
 //{
 //    public class DependencyContainer : IDependencyContainer
 //    {

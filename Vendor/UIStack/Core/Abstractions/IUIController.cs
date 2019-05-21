@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Karma.UIStack
+namespace Hermit.UIStack
 {
     public interface IUIController
     {

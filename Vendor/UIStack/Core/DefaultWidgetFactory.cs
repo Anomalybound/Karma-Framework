@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Object = UnityEngine.Object;
 
-namespace Karma.UIStack
+namespace Hermit.UIStack
 {
     [CustomWidgetFactory(typeof(Widget))]
     public class DefaultWidgetFactory : IWidgetFactory<Widget>
@@ -9,11 +9,11 @@ namespace Karma.UIStack
         public async Task<Widget> CreateInstance(IUIStack manager, string name, int assignedId,
             UIMessage message)
         {
-            var loader = Kar.Resolve<IViewLoader>();
+            var loader = Her.Resolve<IViewLoader>();
             var prefab = await loader.LoadView(name);
             var instance = Object.Instantiate(prefab).GetComponent<Widget>();
             instance.SetManagerInfo(assignedId, name, manager, message);
-            Kar.Inject(instance);
+            Her.Inject(instance);
             instance.OnDestroyEvent += ReturnInstance;
             return instance;
         }
@@ -27,11 +27,11 @@ namespace Karma.UIStack
         async Task<IWidget> IWidgetFactory.CreateInstance(IUIStack manager, string name, int assignedId,
             UIMessage message)
         {
-            var loader = Kar.Resolve<IViewLoader>();
+            var loader = Her.Resolve<IViewLoader>();
             var prefab = await loader.LoadView(name);
             var instance = Object.Instantiate(prefab).GetComponent<IWidget>();
             instance.SetManagerInfo(assignedId, name, manager, message);
-            Kar.Inject(instance);
+            Her.Inject(instance);
             return instance;
         }
     }

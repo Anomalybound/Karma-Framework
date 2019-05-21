@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Karma.Injection;
+using Hermit.Injection;
 
-namespace Karma
+namespace Hermit
 {
     public sealed class EmptyViewModel : ViewModel { }
 
@@ -17,14 +17,6 @@ namespace Karma
         public event PropertyChangedEventHandler PropertyChanged;
 
         public event PropertyChangingEventHandler PropertyChanging;
-
-        protected IEventBroker ScopedEventBroker { get; }
-
-        protected ViewModel()
-        {
-            ScopedEventBroker = Context.GlobalContext.Instance<IEventBroker>();
-        }
-
         protected bool CallPropertyChangeEvent { get; set; } = true;
 
         [NotifyPropertyChangedInvocator]

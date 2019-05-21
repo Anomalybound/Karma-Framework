@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Karma.Injection
+namespace Hermit.Injection
 {
     public class DiContext : IContext
     {
@@ -12,6 +12,16 @@ namespace Karma.Injection
             Container = new DiContainer();
 
             if (Context.GlobalContext == null) { Context.SetCurrentContext(this); }
+        }
+
+        public object Create(Type type, string id = null)
+        {
+            return Container.Create(type, id);
+        }
+
+        public T Create<T>(string id = null) where T : class
+        {
+            return Container.Create<T>(id);
         }
 
         public object Instance(Type contract, string id = null)

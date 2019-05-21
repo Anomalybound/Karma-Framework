@@ -1,4 +1,4 @@
-namespace Karma
+namespace Hermit
 {
     public interface IView { }
 }

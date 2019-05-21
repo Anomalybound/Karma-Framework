@@ -2,9 +2,9 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
-using Karma.Utils;
+using Hermit.Utils;
 
-namespace Karma
+namespace Hermit
 {
     public static class AwaiterExtensions
     {
@@ -24,7 +24,7 @@ namespace Karma
             return new ResourcesRequestAwaiter(self);
         }
 
-#if KARMA_DOTWEEN
+#if HERMIT_DOTWEEN
         public static TweenAwaiter GetAwaiter(this DG.Tweening.Tween self)
         {
             return new TweenAwaiter(self);

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Karma.Fsm
+namespace Hermit.Fsm
 {
     public abstract class ContextState<TContext> : State
     {

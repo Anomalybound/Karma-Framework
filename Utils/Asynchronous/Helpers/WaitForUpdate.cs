@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Karma
+namespace Hermit
 {
     public class WaitForUpdate : CustomYieldInstruction
     {

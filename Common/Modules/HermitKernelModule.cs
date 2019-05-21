@@ -1,11 +1,11 @@
-using Karma.Injection;
-using Karma.Services;
+using Hermit.Injection;
+using Hermit.Services;
 using UnityEngine;
-using Karma.UIStack;
+using Hermit.UIStack;
 
-namespace Karma.Common
+namespace Hermit.Common
 {
-    public class KarmaKernelModules : MonoModule
+    public class HermitKernelModule : MonoModule
     {
         [Header("General")]
         [SerializeField]
@@ -24,21 +24,18 @@ namespace Karma.Common
 
         public override void RegisterBindings(IDependencyContainer Container)
         {
-            // Log
+            // Built-in Services
+            Container.Bind<IEventBroker>().To<EventBroker>().FromInstance(EventBroker.Current);
             Container.Bind<ITime>().To<UnityTime>();
             Container.Bind<ILog>().To<UnityLog>().FromInstance(new UnityLog(EnableLog));
-            Container.Bind<IEventBroker>().To<EventBroker>();
             Container.Bind<IUIStack>().FromMethod(BuildUIStackInstance);
-
-            // Default Widget Factory
-            Container.Bind<DefaultWidgetFactory>();
 
             // View Loader
             Container.Bind<IViewLoader>().To<ResourcesViewLoader>();
 
             // Essentials
             Container.BindInstance(Container);
-            Container.BindAll<Kar>();
+            Container.BindAll<Her>();
         }
 
         protected IUIStack BuildUIStackInstance(IDependencyContainer container)

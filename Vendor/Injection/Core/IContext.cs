@@ -1,4 +1,4 @@
-﻿namespace Karma.Injection
+﻿namespace Hermit.Injection
 {
     public interface IContext : IDependencyResolver
     {

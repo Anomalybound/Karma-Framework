@@ -1,9 +1,9 @@
-﻿namespace Karma.Injection
+﻿namespace Hermit.Injection
 {
     public interface IModule
     {
         void RegisterBindings(IDependencyContainer Container);
 
-//        void UnRegisterBindings(IDependencyContainer container);
+        void Initialization(IDependencyContainer Container);
     }
 }

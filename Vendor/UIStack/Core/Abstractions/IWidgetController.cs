@@ -1,6 +1,6 @@
 using System;
 
-namespace Karma.UIStack
+namespace Hermit.UIStack
 {
     public interface IWidgetController : IDisposable
     {

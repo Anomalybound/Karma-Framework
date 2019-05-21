@@ -1,6 +1,6 @@
-namespace Karma
+namespace Hermit
 {
-    public partial class Kar
+    public partial class Her
     {
         #region Events
 

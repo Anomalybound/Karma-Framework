@@ -1,13 +1,13 @@
-namespace Karma.View
+namespace Hermit.View
 {
     public abstract class UIView<TViewModel> : UIViewBase, IViewModelProvider where TViewModel : ViewModel
     {
         public TViewModel DataContext { get; protected set; }
-
+        
         public override void SetViewModel(object context)
         {
             if (context is TViewModel viewModel) { DataContext = viewModel; }
-            else { Kar.Warn($"{context} is not matching {typeof(TViewModel)}"); }
+            else { Her.Warn($"{context} is not matching {typeof(TViewModel)}"); }
         }
 
         public virtual object GetViewModel()
@@ -26,7 +26,7 @@ namespace Karma.View
         public override void SetViewModel(object context)
         {
             DataContext = (EmptyViewModel) ViewModel.Empty;
-            if (context != null) { Kar.Log($"{GetType().Name} will not receive any models."); }
+            if (context != null) { Her.Log($"{GetType().Name} will not receive any models."); }
         }
     }
 }

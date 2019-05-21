@@ -1,21 +1,23 @@
 ﻿using System;
+using Hermit;
 using UnityEditor;
 
-[InitializeOnLoad]
-public class ScriptOrderManager
+namespace Hermit
 {
-    static ScriptOrderManager()
+    [InitializeOnLoad]
+    public class ScriptOrderManager
     {
-        foreach (var monoScript in MonoImporter.GetAllRuntimeMonoScripts())
+        static ScriptOrderManager()
         {
-            if (monoScript.GetClass() != null)
+            foreach (var monoScript in MonoImporter.GetAllRuntimeMonoScripts())
             {
+                if (monoScript.GetClass() == null) { continue; }
+
                 foreach (var a in Attribute.GetCustomAttributes(monoScript.GetClass(), typeof(ScriptOrderAttribute)))
                 {
                     var currentOrder = MonoImporter.GetExecutionOrder(monoScript);
                     var newOrder = ((ScriptOrderAttribute) a).Order;
-                    if (currentOrder != newOrder)
-                        MonoImporter.SetExecutionOrder(monoScript, newOrder);
+                    if (currentOrder != newOrder) { MonoImporter.SetExecutionOrder(monoScript, newOrder); }
                 }
             }
         }

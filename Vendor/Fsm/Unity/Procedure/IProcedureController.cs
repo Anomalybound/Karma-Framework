@@ -1,4 +1,4 @@
-﻿namespace Karma.Procedure
+﻿namespace Hermit.Procedure
 {
     public interface IProcedureController { }
 }

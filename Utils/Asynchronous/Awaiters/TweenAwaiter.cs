@@ -1,11 +1,11 @@
-#if KARMA_DOTWEEN
+#if HERMIT_DOTWEEN
 
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using DG.Tweening;
 
-namespace Karma.Utils
+namespace Hermit.Utils
 {
     public struct TweenAwaiter : ICriticalNotifyCompletion
     {

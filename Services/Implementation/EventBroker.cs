@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Karma.Services
+namespace Hermit.Services
 {
     /// <summary>
     /// IEventBroker implementation.
@@ -16,14 +16,15 @@ namespace Karma.Services
         private readonly Dictionary<string, Dictionary<Type, Delegate>> _events =
             new Dictionary<string, Dictionary<Type, Delegate>>(32);
 
+        public static EventBroker Current => new EventBroker();
+
         public void Subscribe<T>(string eventName, EventAction<T> eventAction)
         {
             if (eventAction == null) { throw new Exception("No subscriber."); }
 
             var eventType = typeof(T);
 
-            Dictionary<Type, Delegate> delegates;
-            if (!_events.TryGetValue(eventName, out delegates))
+            if (!_events.TryGetValue(eventName, out var delegates))
             {
                 var action = eventAction;
                 delegates = new Dictionary<Type, Delegate> {{eventType, action}};
@@ -31,8 +32,7 @@ namespace Karma.Services
             }
             else
             {
-                Delegate del;
-                if (delegates.TryGetValue(eventType, out del))
+                if (delegates.TryGetValue(eventType, out var del))
                 {
                     delegates[eventType] = (del as EventAction<T>) + eventAction;
                 }
@@ -50,8 +50,7 @@ namespace Karma.Services
 
             var eventType = typeof(EventAction);
 
-            Dictionary<Type, Delegate> delegates;
-            if (!_events.TryGetValue(eventName, out delegates))
+            if (!_events.TryGetValue(eventName, out var delegates))
             {
                 var action = eventAction;
                 delegates = new Dictionary<Type, Delegate> {{eventType, action}};
@@ -59,8 +58,7 @@ namespace Karma.Services
             }
             else
             {
-                Delegate del;
-                if (delegates.TryGetValue(eventType, out del))
+                if (delegates.TryGetValue(eventType, out var del))
                 {
                     delegates[eventType] = (del as EventAction) + eventAction;
                 }
@@ -78,11 +76,9 @@ namespace Karma.Services
 
             var eventType = typeof(T);
 
-            Dictionary<Type, Delegate> delegates;
-            if (!_events.TryGetValue(eventName, out delegates)) { return; }
+            if (!_events.TryGetValue(eventName, out var delegates)) { return; }
 
-            Delegate del;
-            if (!delegates.TryGetValue(eventType, out del)) { return; }
+            if (!delegates.TryGetValue(eventType, out var del)) { return; }
 
             if (del == null) { return; }
 
@@ -101,11 +97,9 @@ namespace Karma.Services
 
             var eventType = typeof(EventAction);
 
-            Dictionary<Type, Delegate> delegates;
-            if (!_events.TryGetValue(eventName, out delegates)) { return; }
+            if (!_events.TryGetValue(eventName, out var delegates)) { return; }
 
-            Delegate del;
-            if (!delegates.TryGetValue(eventType, out del)) { return; }
+            if (!delegates.TryGetValue(eventType, out var del)) { return; }
 
             if (del == null) { return; }
 
@@ -120,8 +114,7 @@ namespace Karma.Services
 
         public void UnsubscribeAll(string eventName, bool keepEvent = false)
         {
-            Dictionary<Type, Delegate> delegates;
-            if (!_events.TryGetValue(eventName, out delegates)) { return; }
+            if (!_events.TryGetValue(eventName, out var delegates)) { return; }
 
             if (keepEvent)
             {
@@ -142,11 +135,9 @@ namespace Karma.Services
 
             var eventType = eventMessage.GetType();
 
-            Dictionary<Type, Delegate> delegates;
-            if (!_events.TryGetValue(eventName, out delegates)) { return; }
+            if (!_events.TryGetValue(eventName, out var delegates)) { return; }
 
-            Delegate del;
-            if (!delegates.TryGetValue(eventType, out del)) { return; }
+            if (!delegates.TryGetValue(eventType, out var del)) { return; }
 
             var evtAction = del as EventAction<T>;
 
@@ -167,11 +158,9 @@ namespace Karma.Services
 
             var eventType = typeof(EventAction);
 
-            Dictionary<Type, Delegate> delegates;
-            if (!_events.TryGetValue(eventName, out delegates)) { return; }
+            if (!_events.TryGetValue(eventName, out var delegates)) { return; }
 
-            Delegate del;
-            if (!delegates.TryGetValue(eventType, out del)) { return; }
+            if (!delegates.TryGetValue(eventType, out var del)) { return; }
 
             var evtAction = del as EventAction;
 

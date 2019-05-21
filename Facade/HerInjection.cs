@@ -1,11 +1,16 @@
 using System;
 using UnityEngine;
 
-namespace Karma
+namespace Hermit
 {
-    public partial class Kar
+    public partial class Her
     {
         #region Static Facade Methods
+
+        public static object Create(Type type, string id = null)
+        {
+            return Current._container.Create(type, id);
+        }
 
         public static object Instance(Type type, string id = null)
         {
@@ -20,6 +25,11 @@ namespace Karma
         public static object Resolve(Type type, string id = null)
         {
             return Current._container.Resolve(type, id);
+        }
+        
+        public static object Create<T>(string id = null) where T : class
+        {
+            return Current._container.Create<T>(id);
         }
 
         public static T Singleton<T>(string id = null) where T : class

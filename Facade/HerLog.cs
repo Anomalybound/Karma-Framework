@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Karma
+namespace Hermit
 {
-    public partial class Kar
+    public partial class Her
     {
         public static void Log(object message, Object context = null)
         {

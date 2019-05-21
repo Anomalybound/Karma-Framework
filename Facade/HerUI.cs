@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Karma.UIStack;
+using Hermit.UIStack;
 
-namespace Karma
+namespace Hermit
 {
-    public partial class Kar
+    public partial class Her
     {
         #region UI Manager
 

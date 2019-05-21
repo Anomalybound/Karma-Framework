@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Threading.Tasks;
 
-namespace Karma.Procedure
+namespace Hermit.Procedure
 {
     public abstract class
         GameProcedure<TProcedureController, TProcedureIndex> : ProcedureBase<TProcedureController>

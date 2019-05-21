@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Karma
+namespace Hermit
 {
     public interface IViewLoader
     {

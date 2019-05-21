@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Karma
+namespace Hermit
 {
     public class Inject : Attribute
     {

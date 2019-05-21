@@ -1,14 +1,14 @@
 ﻿using System;
-using Karma.Injection;
-using Karma.UIStack;
+using Hermit.Injection;
+using Hermit.UIStack;
 
-namespace Karma
+namespace Hermit
 {
-    public sealed partial class Kar
+    public sealed partial class Her
     {
         public static Version Version = new Version("0.0.1");
 
-        private static Kar Current
+        private static Her Current
         {
             get
             {
@@ -18,7 +18,7 @@ namespace Karma
             }
         }
 
-        private static Kar current;
+        private static Her current;
 
         private readonly IDependencyContainer _container;
 
@@ -28,7 +28,7 @@ namespace Karma
 
         private readonly ILog _logger;
 
-        public Kar(IDependencyContainer container, IEventBroker eventBroker, IUIStack iuiStack, ILog logger)
+        public Her(IDependencyContainer container, IEventBroker eventBroker, IUIStack iuiStack, ILog logger)
         {
             _container = container;
             _eventBroker = eventBroker;

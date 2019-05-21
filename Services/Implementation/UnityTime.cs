@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Karma.Services
+namespace Hermit.Services
 {
     public class UnityTime : ITime
     {

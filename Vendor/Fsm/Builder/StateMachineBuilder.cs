@@ -1,4 +1,4 @@
-﻿namespace Karma.Fsm
+﻿namespace Hermit.Fsm
 {
     public class StateMachineBuilder<TState> where TState : IBuildableState, new()
     {

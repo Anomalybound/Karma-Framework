@@ -1,6 +1,6 @@
 using System;
 
-namespace Karma.Injection
+namespace Hermit.Injection
 {
     public interface IDependencyContainer : IDisposable, IDependencyBinder, IDependencyResolver
     {

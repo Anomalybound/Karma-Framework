@@ -3,7 +3,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Karma.Injection
+namespace Hermit.Injection
 {
     [ScriptOrder(-10000)]
     public class SceneContext : MonoBehaviour, IContext
@@ -20,17 +20,21 @@ namespace Karma.Injection
             var sw = Stopwatch.StartNew();
             sw.Start();
 
-            if (Modules != null)
+            foreach (var module in Modules)
             {
-                foreach (var module in Modules)
-                {
-                    if (module == null) { continue; }
+                if (module == null) { continue; }
 
-                    module.RegisterBindings(Container);
-                }
+                module.RegisterBindings(Container);
             }
 
             Container.Build();
+
+            foreach (var module in Modules)
+            {
+                if (module == null) { continue; }
+
+                module.Initialization(Container);
+            }
 
             foreach (var go in (GameObject[]) Resources.FindObjectsOfTypeAll(typeof(GameObject)))
             {
@@ -55,6 +59,16 @@ namespace Karma.Injection
 
                 Inject(monoBehaviour);
             }
+        }
+
+        public object Create(Type type, string id = null)
+        {
+            return Container.Create(type, id);
+        }
+
+        public T Create<T>(string id = null) where T : class
+        {
+            return Container.Create<T>(id);
         }
 
         public object Instance(Type type, string id = null)
