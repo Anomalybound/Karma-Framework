@@ -2,6 +2,8 @@ namespace Hermit
 {
     public interface IViewModelProvider
     {
-        object GetViewModel();
+        ViewModel GetViewModel();
+
+        string GetViewModelTypeName { get; }
     }
 }

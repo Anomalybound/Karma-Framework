@@ -1,13 +1,11 @@
-using Hermit.DataBinding;
-
-namespace Hermit.Adapters
+namespace Hermit.DataBinding
 {
     [Adapter(typeof(int), typeof(string))]
-    public class IntFloatAdapter : IAdapter
+    public class Int2StringAdapter : IAdapter
     {
         public object Covert(object fromObj, AdapterOptions options)
         {
-            return (float) fromObj;
+            return fromObj.ToString();
         }
     }
 }

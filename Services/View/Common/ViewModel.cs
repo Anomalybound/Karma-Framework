@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Hermit.Injection;
 
 namespace Hermit
 {
@@ -17,6 +16,7 @@ namespace Hermit
         public event PropertyChangedEventHandler PropertyChanged;
 
         public event PropertyChangingEventHandler PropertyChanging;
+        
         protected bool CallPropertyChangeEvent { get; set; } = true;
 
         [NotifyPropertyChangedInvocator]

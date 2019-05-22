@@ -7,40 +7,58 @@ using Component = UnityEngine.Component;
 
 namespace Hermit
 {
-    public class OneWayDataBinding : DataBindingBase
+    public class OneWayPropertyBinding : DataBindingBase
     {
         public Component DataProvider;
 
         [SerializeField]
-        private string _viewModelPropertyName;
+        private string _viewModelEntry;
 
         [SerializeField]
-        private string _viewPropertyName;
+        private string _viewEntry;
 
         [SerializeField]
-        private string _adapterTypeName;
+        private string _adapterType;
 
         [SerializeField]
         private AdapterOptions _adapterOptions;
 
         #region Properties
 
-        public string ViewModelPropertyName
+        public string ViewModelEntry
         {
-            get => _viewModelPropertyName;
-            set => _viewModelPropertyName = value;
+            get => _viewModelEntry;
+            set
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorUtility.SetDirty(this);
+#endif
+                _viewModelEntry = value;
+            }
         }
 
-        public string ViewPropertyName
+        public string ViewEntry
         {
-            get => _viewPropertyName;
-            set => _viewPropertyName = value;
+            get => _viewEntry;
+            set
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorUtility.SetDirty(this);
+#endif
+                _viewEntry = value;
+            }
         }
 
-        public string AdapterTypeName
+        public string AdapterType
         {
-            get => _adapterTypeName;
-            set => _adapterTypeName = value;
+            get => _adapterType;
+            set
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorUtility.SetDirty(this);
+#endif
+                _adapterType = value;
+            }
         }
 
         public AdapterOptions AdapterOptions
@@ -67,18 +85,18 @@ namespace Hermit
 
         protected void Awake()
         {
-            if (DataProvider is IViewModelProvider provider) { _viewModel = provider.GetViewModel() as ViewModel; }
+            if (DataProvider is IViewModelProvider provider) { _viewModel = provider.GetViewModel(); }
 
-            if (string.IsNullOrEmpty(_adapterTypeName)) { return; }
+            if (string.IsNullOrEmpty(_adapterType)) { return; }
 
-            _adapterInstance = Her.Resolve<IAdapter>(_adapterTypeName);
+            _adapterInstance = Her.Resolve<IAdapter>(_adapterType);
         }
 
         private void OnEnable()
         {
             if (_viewModel != null) { _viewModel.PropertyChanged += OnPropertyChanged; }
 
-            Bind(ViewPropertyName, ViewModelPropertyName);
+            Bind(ViewEntry, ViewModelEntry);
         }
 
         private void OnDisable()

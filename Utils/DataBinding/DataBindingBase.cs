@@ -8,7 +8,7 @@ namespace Hermit
         /// <summary>
         /// Parse an end-point reference including a type name and member name separated by a period.
         /// </summary>
-        protected static (string typeName, string memberName) ParseEndPointReference(string endPointReference)
+        public static (string typeName, string memberName) ParseEndPointReference(string endPointReference)
         {
             var lastPeriodIndex = endPointReference.LastIndexOf('.');
             if (lastPeriodIndex == -1)
